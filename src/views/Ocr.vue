@@ -201,7 +201,7 @@ var result='';
         formData.append("image", this.$refs.imageInput.files[0]);
         this.count=0
         try {
-          const response = await axios.post("http://192.168.1.16:5100/process_image", formData, {
+          const response = await axios.post(`${process.env.VUE_APP_URL_API_OCR}`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
