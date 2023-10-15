@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-2xl mx-auto relative">
+  <div class="max-w-4xl mx-auto relative">
 
     <nav class="grid grid-cols-12 gap_6 items-center justify-center">
       <router-link  :to="{ name: 'home' }" :class="`${className}`">Objective</router-link> 
@@ -19,7 +19,7 @@ export default{
 
   data(){
     return {
-      className:"p-2 m-2 bg-gradient-to-br from-green-500 via-teal-500 to-emerald-500 text-2xl font-bold bg-clip-text text-transparent col-span-12 xl:col-span-3 "
+      className:"p-2 m-2 bg-gradient-to-br from-green-500 via-teal-500 to-emerald-500 text-xl font-bold bg-clip-text text-transparent col-span-12 xl:col-span-4 "
     }
   
   },

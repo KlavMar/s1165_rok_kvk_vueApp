@@ -25,7 +25,7 @@ export default {
           username: this.username,
           password: this.password,
         });
-        console.log(this.username,this.password)
+        
 
         if (response.status == 200){
           const token = response.data.access;
@@ -38,7 +38,7 @@ export default {
            
 
         // const token = response.data.token;
-        console.log(response)
+   
         // Stocker le token localement, par exemple dans les cookies ou le stockage local
       } catch (error) {
         console.error('Erreur de connexion :', error);

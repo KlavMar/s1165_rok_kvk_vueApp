@@ -5,8 +5,8 @@
       </div>
   
 
-        <h3 arial_label="time left to open" class="time_left text-2xl xl:text-4xl p-2 m-2 text-gray-600 p-2 m-2 text-center font-bold"> Time left : {{ time_left }}</h3>
-        <section v-show="time_left<=0">
+        <h3 arial_label="time left to open" class="time_left text-6xl p-2 m-2 text-gray-600 p-2 m-2 text-center font-bold"> Time left : {{ time_left }}</h3>
+        <section v-if="time_left<=0">
         <div class="p-2 m-2 font-medium text-gray-600">
           <p> Send your image</p>
           <p> Some data may not be detected </p>
@@ -192,7 +192,7 @@ var result='';
       },
       async getKvk(){
           await axios.get(`${process.env.VUE_APP_URL_API}/api/kvk_date/?ordering=-id&limit=1`)
-          .then(response=>{this.kvk=response.data.results,console.log(response.data)})
+          .then(response=>{this.kvk=response.data.results})
           return this.kvk
       },
       async submitImage() {
@@ -242,7 +242,7 @@ var result='';
   const values = formData.getAll('value');
   const kvk =formData.getAll("id_kvk");
 
-  console.log(kvk)
+
   
   const FormDataImg = new FormData(document.getElementById('image_'))
   
@@ -264,15 +264,13 @@ var result='';
         "id_type_troops": parseInt(typeTroops[i]),
         'id_name_kvk':parseInt(kvk[0])
       };
-      console.log(data);
+     
 
       if (values[i] > 0 && typeUnits[i]>3) {
-        try {
-          const response = await axios.post(`${process.env.VUE_APP_URL_API}/api/hall_of_fame/`, data);
-          console.log(response.data);
-        } catch (error) {
-          console.error(error);
-        }
+
+          await axios.post(`${process.env.VUE_APP_URL_API}/api/hall_of_fame/`, data);
+
+  
       }
     }
   }
