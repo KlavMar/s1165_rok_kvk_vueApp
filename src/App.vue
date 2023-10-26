@@ -1,37 +1,52 @@
 <template>
-  <div class="max-w-4xl mx-auto relative">
+  <navComponent></navComponent>
 
-    <nav class="grid grid-cols-12 gap_6 items-center justify-center">
-      <router-link  :to="{ name: 'home' }" :class="`${className}`">Objective</router-link> 
-        <router-link  :to="{ name: 'calendar' }" :class="`${className}`">Calendar Kvk</router-link> 
-        <router-link  :to="{ name: 'ocr' }" :class="`${className}`">Scan to Hall of Fame</router-link> 
-
-        <!-- <button class="bg-gradient-to-br from-red-500 to-orange-500 p-2 m-2 rounded-lg text-white " @click="logout">Logout</button> -->
-    </nav>
-
+<main class="">
   <router-view/>
-</div>
+</main>
+<footerComponent></footerComponent>
+
+
+
 </template>
 <script>
 
-
+import navComponent from '@/components/ui/nav.vue'
+import footerComponent from '@/components/ui/footer.vue'
+import axios from 'axios'
+import VueCookies from 'vue-cookies'
 export default{
-
+  components:{
+    navComponent,footerComponent
+  },
   data(){
     return {
-      className:"p-2 m-2 bg-gradient-to-br from-green-500 via-teal-500 to-emerald-500 text-xl font-bold bg-clip-text text-transparent col-span-12 xl:col-span-4 "
+   url_api :`${process.env.VUE_APP_URL_API}`,
     }
   
   },
-  methods:{
-    logout() {
-      // Supprimez toutes les données du localStorage
-      localStorage.clear();
-      
-      // Redirigez l'utilisateur vers la page de connexion (ou une autre page de votre choix)
-      this.$router.push({ name: 'login' });
+  created() {
+  let token = VueCookies.get('jwt_token');
+  if (token) {
+    try {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      this.$store.commit('setLoggedIn',true)
+      console.log(token);
+    } catch (error) {
+      console.log(error);
+      this.$router.push({name:'login'});
     }
+  } else {
+  
+    this.$router.push({name:'login'});
   }
+},
+  methods:{
+
+
+
+    },
+  
 
 }</script>
 
