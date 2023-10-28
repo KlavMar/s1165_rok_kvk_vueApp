@@ -91,7 +91,7 @@ export default
 
 
             let urlFilter;
-            urlFilter = "http://127.0.0.1:8000/api/post/?published=true&ordering=-created_on&limit=10";
+            urlFilter = `${process.env.VUE_APP_URL_API}/api/post/?published=true&ordering=-created_on&limit=10`;
             try{
                 //await axios.get(urlFilter).then(response =>{this.post = response.data.results})
                 const response = await axios.get(urlFilter)
@@ -115,7 +115,7 @@ export default
            
             },
             async get_versonning(){
-            const response = await axios.get("http://127.0.0.1:8000/api/versionning/?ordering=-created_on&limit=10")
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/versionning/?ordering=-created_on&limit=10`)
   
             return response.data.results
           },

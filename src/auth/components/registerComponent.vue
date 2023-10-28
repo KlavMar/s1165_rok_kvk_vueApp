@@ -114,11 +114,12 @@ export default{
         },
         methods: {
           async register() {
+            console.log(this.username,this.password,this.password_1,this.email)
               try {
-                    const response = await axios.post('http://127.0.0.1:8000/authentification/api/token/', {
+                    const response = await axios.post('http://127.0.0.1:8000/authentification/register_api/', {
                   username: this.username,
-                  password: this.password,
-                  password1:this.password_1,
+                  password1: this.password,
+                  password2:this.password_1,
                   email:this.email
                 });
                 

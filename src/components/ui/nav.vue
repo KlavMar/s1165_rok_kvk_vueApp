@@ -39,8 +39,14 @@
         <div v-show="isDropdownOpen && currentDropdownIndex === index" class="absolute top-15 left-0 mt-2  rounded-xl bg-gray-50   w-96 z-10  ">
 
           <div class="flex flex-col text-gray-900"  role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-            
-            <router-link class="w-full p-2 m-2 "  v-for="(value,index) in value_.content" :key="index" :to="{name:`${value.name_route}`}">{{value.name}} </router-link>
+            <ul v-for="(value,index) in value_.content" :key="index" class="flex flex-col">
+              <router-link class="w-full p-2 m-2 "   :to="{name:`${value.name_route}`}">{{value.name}} </router-link>
+
+              <navProfil v-if="value.name=='profil' && this.governor_id>0" :governor_id="this.governor_id"></navProfil>
+              <hr  v-if="value.name=='profil'"  class="bg-gray-900 ">
+              <div v-if="value.name=='profil' && this.governor_id == null " class="p-2 m-2">Select your Profil before access this menu</div>
+            </ul>
+           
           </div>
         </div>
       </div>
@@ -57,8 +63,12 @@
 <script>
 
 import VueCookies from 'vue-cookies'
+import navProfil from '@/user/components/navProfil.vue'
 export default{
 name:'NavComponent',
+components:{
+  navProfil
+},
   data(){
     return {
     
@@ -67,14 +77,14 @@ name:'NavComponent',
       isDropdownOpen: false,
       currentDropdownIndex: null,
       openExtNav:false,
-
+      governor_id:'',
       nav:[
         {
             title:'Space KvK',
             content:[
                 {name_route:"objective",name:"Objective"},
                 {name_route:"calendar",name:"Calendar Kvk"},
-                {name_route:"hall_of_fame",name:"Hall of Fame"}
+                {name_route:"hall of heroes",name:"Hall of heroes"}
             ]
 
         },
@@ -101,7 +111,8 @@ name:'NavComponent',
   
   },
   mounted() {
-
+    this.governor_id = VueCookies.get("governor_id")
+    console.log(this.governor_id)
 },
 
   methods:{
@@ -110,6 +121,8 @@ name:'NavComponent',
       localStorage.clear();
       sessionStorage.clear();
       VueCookies.remove('jwt_token');
+      VueCookies.remove('user_id');
+      VueCookies.remove('governor_id');
       this.$store.commit('setLoggedIn',false);
       this.$router.push({ name: 'home' });
     },

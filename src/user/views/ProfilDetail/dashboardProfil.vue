@@ -3,7 +3,10 @@
       <div class="key_container col-span-12 xl:col-span-2 xl:shadow-lg">
 
             <section class="grid grid-cols-12 gap-4 my-2 p-2" v-for="(value,index) in last_data" :key="index">
-
+              <article class="col-span-12 p-10  bg-gray-50 font-bold rounded-2xl shadow-lg">
+                <h3 class="text-xl text-gray-400">Last Date</h3>
+                {{ value.date }}
+            </article>
               <article class="col-span-12 p-10  bg-orange-50 font-bold rounded-2xl shadow-lg">
                 <h3 class="text-xl text-orange-400">Power</h3>
                 {{ numberFormat(value.power) }}
@@ -22,8 +25,8 @@
     <hr>
         <section class="grid grid-cols-12 gap-4 my-2 p-2" v-for="(value,index) in rss" :key="index">
           
-            <article class="col-span-12 p-10  bg-orange-50 font-bold rounded-2xl shadow-lg">
-              <h3 class="text-xl text-orange-700">Wood</h3>
+            <article class="col-span-12 p-10  bg-amber-50 font-bold rounded-2xl shadow-lg">
+              <h3 class="text-xl text-amber-700">Wood</h3>
                 {{ numberFormat(value.wood) }}
             </article>
             <article class="col-span-12 p-10  bg-green-50 font-bold rounded-2xl shadow-lg">
@@ -60,6 +63,7 @@
             <div ref="inf" id="inf" class="graph col-span-12 xl:col-span-4 p-10 shadow-lg rounded-xl m-2"></div>
             <div ref="cav"  id="cav" class="graph col-span-12 xl:col-span-4 p-10 shadow-lg rounded-xl m-2"></div>
             <div ref="archers" id="archers" class="graph col-span-12 xl:col-span-4 p-10 shadow-lg rounded-xl m-2"></div>
+            <!-- <div ref="treb" id="treb" class="graph col-span-12 xl:col-span-4 p-10 shadow-lg rounded-xl m-2"></div> -->
           </article>
         </section>
 
@@ -77,17 +81,23 @@
       return {
         data_chart: [],
         last_data:[],
-        troops:[],
+        infantry:[],
+        cavalry:[],
+        archers:[],
         rss:[],
         accel_user:[]
       };
     },
-    created(){
-        this.last_data=this.GetLastData()
-        this.troops = this.getTroops()
-        this.rss = this.getRss()
-        this.accel_user=this.getAccel()
+    async created(){
+        this.last_data=this.GetLastData();
+        this.rss = this.getRss();
+       this.accel_user= this.getAccel();
+        await this.getInfantry();
+        await this.getArchers();
+        await this.getCavalry();
+        await this.getTreb();
     },
+
     mounted() {
       this.getData().then(() => {
         this.data_chart.forEach(d => {
@@ -98,21 +108,37 @@
        this.createChart(this.data_chart,this.$refs.deads,"date","deads",'Deads','#ef4444');
     
       });
-      this.getTroops().then(() => {
-        this.troops.forEach(d => {
+      this.getInfantry().then(() => {
+        this.infantry.forEach(d => {
           d.date_updated = new Date(d.date_updated); // Convertit la date en objet de date JavaScript
         });
-        this.createChartTwice(this.troops,this.$refs.inf,"date_updated","Infanterie_nb_T4","Infanterie_nb_T5",'Infantry','#3b82f6','#0ea5e9')
-        this.createChartTwice(this.troops,this.$refs.cav,"date_updated","Cavalerie_nb_T4","Cavalerie_nb_T5",'Cavalry','#3b82f6','#0ea5e9')
-        this.createChartTwice(this.troops,this.$refs.archers,"date_updated","Archers_nb_T4","Archers_nb_T5",'Archers','#3b82f6','#0ea5e9')
+        this.createChartTwice(this.infantry,this.$refs.inf,"date_updated","value_troop",'Infantry','#3b82f6','#0ea5e9')
     });
+    this.getCavalry().then(() => {
+        this.cavalry.forEach(d => {
+          d.date_updated = new Date(d.date_updated); // Convertit la date en objet de date JavaScript
+        });
+        this.createChartTwice(this.cavalry,this.$refs.cav,"date_updated","value_troop",'Cavalry','#3b82f6','#0ea5e9')
+    });
+    this.getArchers().then(() => {
+        this.archers.forEach(d => {
+          d.date_updated = new Date(d.date_updated); // Convertit la date en objet de date JavaScript
+        });
+        this.createChartTwice(this.archers,this.$refs.archers,"date_updated","value_troop",'Archers','#3b82f6','#0ea5e9')
+    });
+    // this.getTreb().then(() => {
+    //     this.treb.forEach(d => {
+    //       d.date_updated = new Date(d.date_updated); // Convertit la date en objet de date JavaScript
+    //     });
+    //     this.createChartTwice(this.treb,this.$refs.treb,"date_updated","value_troop",'Trebuchet','#3b82f6','#0ea5e9')
+    // });
 
     },
     methods: {
       async getData() {
         try {
         const governorId = this.$route.params.governor_id;
-          const response = await axios.get(`http://127.0.0.1:8000/api/kill_power_user/?governor_id=${governorId}&type=json`);
+          const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/kill_power_user/?governor_id=${governorId}&type=json`);
           this.data_chart = response.data.results;
           return this.data_chart;
         } catch (error) {
@@ -129,7 +155,7 @@
         
         try {
         const governorId = this.$route.params.governor_id;
-          const response = await axios.get(`http://127.0.0.1:8000/api/kill_power_user/?governor_id=${governorId}&ordering=-id&limit=1&type=json`);
+          const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/kill_power_user/?governor_id=${governorId}&ordering=-id&limit=1&type=json`);
           this.last_data = response.data.results;
           return this.last_data;
         } catch (error) {
@@ -137,14 +163,45 @@
           return [];
         }
       },
-      async getTroops(){
+      async getInfantry(){
         try{
             const governorId = this.$route.params.governor_id;
-            console.log(governorId)
-            const response = await axios.get(`http://127.0.0.1:8000/api/troops_user/?id_account=${governorId}`);
-            this.troops = response.data.results
-        
-            return this.troops
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/troop_user/?id_account=${governorId}&id_type_troops=1&date_gte=2023-01-01`)
+            this.infantry=response.data.results;
+            return this.infantry
+        }
+        catch(error){
+            console.log(error)
+        }
+      },
+      async getCavalry(){
+        try{
+            const governorId = this.$route.params.governor_id;
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/troop_user/?id_account=${governorId}&id_type_troops=3&date_gte=2023-01-01`)
+            this.cavalry=response.data.results;
+            return this.cavalry
+        }
+        catch(error){
+            console.log(error)
+        }
+      },
+      async getArchers(){
+        try{
+            const governorId = this.$route.params.governor_id;
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/troop_user/?id_account=${governorId}&id_type_troops=2&date_gte=2023-01-01`)
+            this.archers=response.data.results;
+            return this.archers
+        }
+        catch(error){
+            console.log(error)
+        }
+      },
+      async getTreb(){
+        try{
+            const governorId = this.$route.params.governor_id;
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/troop_user/?id_account=${governorId}&id_type_troops=4&date_gte=2023-01-01`)
+            this.treb=response.data.results;
+            return this.treb
         }
         catch(error){
             console.log(error)
@@ -153,24 +210,25 @@
       async getRss(){
         try{
             const governorId = this.$route.params.governor_id;
-            const response = await axios.get(`http://127.0.0.1:8000/api/ressource_user/?id_account=${governorId}&ordering=-id&limit=1`);
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/ressource_user/?id_account=${governorId}&ordering=-id&limit=1`);
             this.rss = response.data.results
         
             return this.rss
         }
         catch(error){
             console.log(error)
+            this.$router.push({name:"login"})
         }
       },
       async getAccel(){
         try{
             const governorId = this.$route.params.governor_id;
             const promises = [
-        axios.get(`http://127.0.0.1:8000/api/accel_user/?id_account=${governorId}&id_type_accels=1&ordering=-id&limit=1`),
-        axios.get(`http://127.0.0.1:8000/api/accel_user/?id_account=${governorId}&id_type_accels=2&ordering=-id&limit=1`),
-        axios.get(`http://127.0.0.1:8000/api/accel_user/?id_account=${governorId}&id_type_accels=3&ordering=-id&limit=1`),
-        axios.get(`http://127.0.0.1:8000/api/accel_user/?id_account=${governorId}&id_type_accels=4&ordering=-id&limit=1`),
-        axios.get(`http://127.0.0.1:8000/api/accel_user/?id_account=${governorId}&id_type_accels=5&ordering=-id&limit=1`)
+        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=1&ordering=-id&limit=1`),
+        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=2&ordering=-id&limit=1`),
+        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=3&ordering=-id&limit=1`),
+        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=4&ordering=-id&limit=1`),
+        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=5&ordering=-id&limit=1`)
     ];
 
         const responses = await Promise.all(promises);
@@ -187,7 +245,7 @@
 
       createChart(data,ref_chart,x_data,y_data,title,color_line) {
 
-        const margin = { top: 50, right: 0, bottom: 0, left: 50 };
+        const margin = { top: 50, right: 0, bottom: 0, left: 0 };
         const container = ref_chart
         const width = container.clientWidth - margin.left - margin.right;
         const height = (container.clientWidth * 0.75) - margin.top - margin.bottom; // Utilisez le ratio pour la hauteur
@@ -288,8 +346,8 @@
         });
         // Personnalisez davantage le graphique selon vos besoins
       },
-      createChartTwice(data, ref_chart, x_data, y_data, y_data_2, title, color_line, color_line_2) {
-  const margin = { top: 50, right: 0, bottom: 0, left: 50 };
+      createChartTwice(data, ref_chart, x_data, y_data, title, color_line, color_line_2) {
+  const margin = { top: 50, right: 0, bottom: 0, left: 0 };
   const container = d3.select(ref_chart);
   const width = container.node().clientWidth - margin.left - margin.right;
   const height = (container.node().clientWidth * 0.75) - margin.top - margin.bottom;
@@ -303,10 +361,15 @@
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
+        // générer les tables 
+  const filteredData1 = data.filter(d => d.id_type_unit.id_type_unit === 4);
+  const filteredData2 = data.filter(d => d.id_type_unit.id_type_unit === 5);
+
+
   const xScale = d3.scaleTime().domain(d3.extent(data, d => d[x_data])).range([0, width]);
 
-  const y_max_1 = d3.max(data, d => d[y_data]);
-  const y_max_2 = d3.max(data, d => d[y_data_2]);
+  const y_max_1 = d3.max(filteredData1, d => d[y_data]);
+  const y_max_2 = d3.max(filteredData2, d => d[y_data]);
   const yMax = Math.max(y_max_1, y_max_2);
 
   const yScale = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
@@ -318,18 +381,18 @@
 
   const line2 = d3.line()
     .x(d => xScale(d[x_data]))
-    .y(d => yScale(d[y_data_2]))
+    .y(d => yScale(d[y_data]))
     .curve(d3.curveMonotoneX);
 
   svg.append("path")
-    .datum(data)
+    .datum(filteredData1)
     .attr("fill", "none")
     .attr("stroke", color_line)
     .attr("stroke-width", 4)
     .attr("d", line);
 
   svg.append("path")
-    .datum(data)
+    .datum(filteredData2)
     .attr("fill", "none")
     .attr("stroke", color_line_2)
     .attr("stroke-width", 4)
@@ -366,7 +429,8 @@
   const legend = svg
     .append("g")
     .attr("class", "legend")
-    .attr("transform", `translate(${width - 100}, 30)`);
+    //.attr("transform", `translate(${width - 100}, 20)`)
+    .attr("transform", "translate(40, 20)");
 
   legend
     .append("rect")
@@ -384,12 +448,8 @@
     .attr("height", 20)
     .attr("fill", color_line_2);
 
-    const pattern = /_nb_(T\d+)$/;
-  const legendLabels = [y_data, y_data_2];
-  const filteredLabels = legendLabels.map(label => {
-    const match = label.match(pattern);
-    return match ? match[1] : null;
-  }).filter(label => label !== null);
+
+  const filteredLabels =["T4","T5"]
 
   filteredLabels.forEach((label, i) => {
     legend
@@ -403,7 +463,7 @@
 
   const tooltip = d3.select(ref_chart).append("div").attr("class", "tooltip");
   const circles1 = svg.selectAll(".circle-y1")
-  .data(data)
+  .data(filteredData1)
   .enter()
   .append("circle")
   .attr("class", "circle-y1")
@@ -414,13 +474,13 @@
 
 
 const circles2 = svg.selectAll(".circle-y2")
-  .data(data)
+  .data(filteredData2)
   .enter()
   .append("circle")
   .attr("class", "circle-y2")
   .attr("class","relative")
   .attr("cx", d => xScale(d[x_data]))
-  .attr("cy", d => yScale(d[y_data_2]))
+  .attr("cy", d => yScale(d[y_data]))
   .attr("r", 5) 
   .attr("fill", color_line_2);
 
@@ -451,14 +511,14 @@ circles2.on("mouseover", function (event, d) {
   const x = event.pageX;
   const y = event.pageY;
 
-  tooltip.html(`${filteredLabels[1]} : ${formatNumber(d[y_data_2])}`)
+  tooltip.html(`${filteredLabels[1]} : ${formatNumber(d[y_data])}`)
   .style("left", x + "px")
     .style("top", y + "px")
-    .attr("class"," text-white absolute top-0 left-0 text-lg font-bold p-2 m-2")
+    .attr("class"," text-white absolute top-0 -left-24 right-0   text-lg font-bold p-2 m-2")
     .style("background",color_line_2)
     .style("height","auto")
     .style("width","10%")
-    .style("display", "block");
+    .style("display", "flex");
 });
 
 circles2.on("mouseout", function () {
@@ -477,12 +537,13 @@ convertTime(seconds) {
       seconds -= minutes * 60;
       return `${days} D ${hours} Hour ${minutes}min`;
     },
-    },
+    
+    }
   };
   </script>
     <style>
     .graph {
-   
-        height:30em;
+   height: 30em;
+        
     }
     </style>

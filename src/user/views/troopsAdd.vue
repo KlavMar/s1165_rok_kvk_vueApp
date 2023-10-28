@@ -1,8 +1,13 @@
 <template>
-    <div class="relative flex flex-col items-center h-screen ">
+    <div class="relative flex flex-col items-center min-h-screen ">
       <div v-if="loading" class="flex justify-center items-center absolute inset-0 bg-white z-40 h-screen w-screen">
         <div class="loader"></div>
       </div>
+      <h3 class="text-xl font-bold text-gray-600 p-2 m-2"> Send your screenshot troops for update</h3>
+      <p class="text-gray-700 text-lg font-semibold">Image must be stay original</p>
+      <button class="bg-gradient-to-br from-rose-500 via-purple-500 to-indigo-500 font-bold text-gray-50 py-2 px-5 m-2 rounded-lg" @mouseover="isactivescreen=true" @mouseleave="isactivescreen=false"> See example screenshot <small> Hover me </small></button>
+    
+        <img v-show="isactivescreen" src="@/assets/troops_example.png" class="w-full xl:w-1/2 rounded-xl">
         <section class="flex flex-col p-2 m-2 justify-center items-center w-full xl:max-w-3xl">
 
             <form @submit.prevent="submitImage" enctype="multipart/form-data" id="image_" >
@@ -17,13 +22,13 @@
         <div class="m-2 p-2"  v-if="OcrData.length && !message ">
 
           <h3 class="p-2 m-2 font-bold text-2xl text-gray-600">Résult</h3>
-          <form  v-on:submit.prevent="FormSend" id="form_ocr" class="grid grid-cols-12 gap-6">
+          <form  v-on:submit.prevent="FormSend" id="form_ocr_troop" class="grid grid-cols-12 gap-6">
       
           <button type="submit"  data-action="confirm" class="col-span-12 xl:col-span-6 btn bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 text-gray-50 px-5 py-2  font-bold" >confirm</button>
       
             <fieldset  v-for="(data, index) in OcrData" :key="index" class="col-span-12" >
 
-            <div class="grid grid-cols-12 gap-6 text-gray-500  p-2 m-2 rounded-lg" v-if="data>0">
+            <div class="grid grid-cols-12 gap-6 text-gray-500  p-2 m-2 rounded-lg">
               <select  name="type_units" class="col-span-12 xl:col-span-3 p-1 m-1 rounded-lg font-semibold "  >
          
                 <option v-for="(value,index) in typeUnit" :key="index"    :value="value.id_type_unit" :name="value.id_type_unit" >{{ value.name_type_unit }}</option>
@@ -80,27 +85,45 @@
       return {
         message:false,
         OcrData: [],
+        typeTroops:[],
+        typeUnit:[],
         imageLoaded: false,
         loadedImage: null,
         loading: false,
         file:'',
+        isactivescreen:false,
         user:'',
         data:[],
         counter:0,
         count:0,
         image:'',
         open:false,
-
+        liste_control:[],
+             
    
       };
     },
    async  mounted(){
-
+    this.typeUnit = await this.getTypeUnit();
+    this.typeTroops =await this.getTypeTroop();
     },
 async created(){
 
 },
     methods: {
+      async getTypeTroop(){
+        let url = `${process.env.VUE_APP_URL_API}api/type_troops/`    
+        await axios.get(url)
+                .then(response=>{this.typeTroops = response.data.results})
+                return this.typeTroops    
+      },
+      async getTypeUnit(){
+        let url = `${process.env.VUE_APP_URL_API}api/type_unit_troops/?ordering=id_type_unit`  
+        await axios.get(url)
+                .then(response=>{this.typeUnit = response.data.results})
+                return this.typeUnit
+      },
+
       async submitImage() {
         this.loading = true;
         const formData = new FormData();
@@ -109,7 +132,7 @@ async created(){
         try {
          // const response = await axios.post(`${process.env.VUE_APP_URL_API_OCR}`, formData, {
             delete axios.defaults.headers.common['Authorization'];
-            const response = await axios.post("http://192.168.1.17:5002/process_image_troops", formData, {
+            const response = await axios.post(`${process.env.VUE_APP_URL_API_OCR_TROOPS}`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
@@ -149,29 +172,36 @@ async created(){
         }
       },
       async  FormSend() {
-  
-     await axios.post(`${process.env.VUE_APP_URL_API}api/troops_user/`);
-  
-      let data = {
-    "Archers_nb_T4": null,
-    "Archers_nb_T5": null,
-    "Infanterie_nb_T4": null,
-    "Infanterie_nb_T5": null,
-    "Cavalerie_nb_T4": null,
-    "Cavalerie_nb_T5": null,
-    "Sieges_nb_T4": null,
-    "Sieges_nb_T5": null,
-    "id_account": null
+        const form = document.getElementById("form_ocr_troop");
+        const id_account= this.$route.params.governor_id;
+        const formData = new FormData(form);
+       
+        const typeUnits = formData.getAll('type_units');
+        const typeTroops = formData.getAll('type_troops');
+        const value_troop = formData.getAll('value');
+    //  await axios.post(`${process.env.VUE_APP_URL_API}api/troops_user/`);
+    for (let i = 0; i < typeUnits.length; i++) {
+
+      let data ={
+    "value_troop": parseInt(value_troop),
+    "id_account": parseInt(id_account),
+    "id_type_unit": parseInt(typeUnits),
+    "id_type_troops": parseInt(typeTroops)
+}
+  console.log(data)
+
+       await axios.post(`${process.env.VUE_APP_URL_API}api/troop_user/`, data);
     }
-    console.log(data)
+
+
+
   this.message=true;
   return  setTimeout(() => {this.$router.push({ name: 'nav', params: { governor_id: this.$route.params.governor_id } });
                             }, 3000);
                             
 
-}
-
     },
+  }
    
 }
   </script>

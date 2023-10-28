@@ -33,12 +33,21 @@ export default{
       this.$store.commit('setLoggedIn',true)
       console.log(token);
     } catch (error) {
-      console.log(error);
-      this.$router.push({name:'login'});
+      localStorage.clear();
+      sessionStorage.clear();
+      VueCookies.remove('jwt_token');
+      VueCookies.remove('user_id');
+      this.$store.commit('setLoggedIn',false)
+      this.$router.push({name:'home'});
     }
   } else {
   
-    this.$router.push({name:'login'});
+      localStorage.clear();
+      sessionStorage.clear();
+      VueCookies.remove('jwt_token');
+      VueCookies.remove('user_id');
+      this.$store.commit('setLoggedIn',false)
+      this.$router.push({name:'home'});
   }
 },
   methods:{
@@ -52,5 +61,8 @@ export default{
 
 
 <style>
+html {
+  scroll-behavior: smooth;
 
+}
 </style>

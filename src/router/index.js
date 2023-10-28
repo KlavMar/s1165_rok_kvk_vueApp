@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import home from '@/views/HomeView.vue'
 import ObjectiveAPP from '@/kvk/components/objective'
 import CalendarApp from '@/views/Calendar.vue'
-import OcrApp from '@/views/Ocr.vue'
+import OcrApp from '@/kvk/views/Ocr.vue'
 import post from '@/views/Actualite.vue'
 
 const routes = [
@@ -22,8 +22,8 @@ const routes = [
     component:CalendarApp
   },
   {
-    path:'/hall_of_fame',
-    name:'hall_of_fame',
+    path:'/hall_of_heroes',
+    name:'hall of heroes',
     component:OcrApp
 
   },
@@ -67,7 +67,7 @@ const routes = [
       {
         path:'nav/:governor_id',
         name:"nav",
-        component:()=>import('@/user/views/navProfil.vue')
+        component:()=>import('@/user/components/navProfil.vue')
       },
       {
         path:'dashboard/:governor_id',
@@ -83,6 +83,11 @@ const routes = [
         path:'calculator/rss/:governor_id',
         name:"ressource",
         component:()=>import('@/user/components/calculator/ressourceComponent.vue')
+      },
+      {
+        path:'calculator/speed/:governor_id',
+        name:"speed",
+        component:()=>import('@/user/components/calculator/accelComponent.vue')
       }
     ]
   }

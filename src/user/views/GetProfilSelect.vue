@@ -9,7 +9,7 @@
             <button class="col-span-4 w-full xl:col-span-1 btn bg-gradient-to-br from-red-500 via-rose-500 to-pink-500 text-red-200 px-5 py-2 m-2 rounded-lg font-semibold"   v-if="data.length>0" @click="delete_button">Delete</button>
         </div>
         <div class="flex flex-col xl:grid xl:grid-cols-12 gap-6 flex-wrap p-2 m-2">
-            <router-link :to="{name:'nav', params:{governor_id:value.id_account}}" class="font-semibold hover:bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 hover:text-gray-50 bg-white hover:shadow-2xl 
+            <router-link :to="{name:'dashboard', params:{governor_id:value.id_account}}" @click="createCookieGov(value.id_account)" class="font-semibold hover:bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 hover:text-gray-50 bg-white hover:shadow-2xl 
             w-full col-span-6 rounded-lg p-5 m-2 text-xl" v-for="(value,index) in data" :key="index" ><h1>{{value.governor_name}}</h1>
                 <div class="card-user-data">
                     <small class="text-lg color-gray-600">{{value.date_updated}}</small>
@@ -126,7 +126,7 @@
                     this.data= await this.getData()
                     this.type_account=await this.getTypeAccount() 
                     this.data = await this.getData()       
-                    console.log(this.data)        
+           
              
                 },
                 methods:{
@@ -205,6 +205,9 @@
                 },
                 cancelSubmit(event){
                         event.preventDefault();
+                    },
+                    createCookieGov(governor_id){
+                        VueCookies.set("governor_id",governor_id)
                     },
                 async FormAddAccount(){
                     let form = document.getElementById("form_add");

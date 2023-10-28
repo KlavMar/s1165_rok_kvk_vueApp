@@ -4,7 +4,7 @@ export default createStore({
   state: {
     showResetPassword: false,
     showRegister:false,
-    isLoggedIn: '',
+    isLoggedIn: false,
     governor_id:''
   },
 
