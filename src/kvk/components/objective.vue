@@ -1,9 +1,9 @@
 
 <template>
 
-    <div class="mx-auto xl:max-w-3xl relative h-screen">
+    <div class="mx-auto xl:max-w-3xl relative min-h-screen">
         <h1 class="text-2xl font-semibold text-center p-2 bg-gradient-to-br from-red-500 via-orange-500 to-yellow-500 text-transparent bg-clip-text">
-        Objective was fixed date in matchmaking so 2023-09-06 </h1>
+        Objective was fixed date in matchmaking </h1>
         <div class="grid grid-cols-4 gap-2 p-5" >
   
           <button class="col-span-4 text-2xl btn px-5 py-2 my-5 bg-gradient-to-br from-green-500 via-emerald-500 to-lime-500 font-bold rounded-lg text-gray-50" @click="openaside" v-show="!activate">Important information - calculation!</button>
@@ -57,11 +57,27 @@
       <p class="p-2 m-2 bg-gradient-to-b from-red-500 via-orange-500 to-yellow-500 text-transparent bg-clip-text text-2xl font-bold" >Score Deads  {{ formatNumber(sliderValue) }}</p>
   </aside>
     <section class="flex flex-col p-2 m-2  mx-auto relative">
-  
+      
+      <div class="warning p-2 m-2 font-semibold">
+        <p class="text-gray-700 text-2xl">For example : </p>
+        <div class="text-red-500">
+          <ul>
+            <li class="p-2 m-1">50 000 000 of Deads points , is egal to so: </li>
+            <li class="p-2 m-1">50 000 000 / 160 = 312 500 T5 or 50 000 000 / 80 = 625 000 T4</li>
+            <li class="p-2 m-1">but you can mix each troop.</li>
+            <li class="p-2 m-1">So 500 000 T4 and 150 000 T5 = 64 000 000 point of dead</li>
+          </ul>
+
+           </div>
+      </div>
   
     <article class="text-sm  w-full">
         <div class="relative search-bar">
-          <input class="w-full px-4 py-2 bg-transparent border border-gray-300  rounded-lg focus:outline-none focus:border-gray-600" 
+          <select name="id_kvk" class="w-full px-4 py-2 bg-transparent border border-gray-300  rounded-lg focus:outline-none focus:border-gray-600 m-2 p-2" >
+
+            <option v-for="(value,index) in kvk" :key="index" :value="value.id">{{value.name_kvk}}</option>
+          </select>
+          <input class="w-full px-4 py-2 bg-transparent border border-gray-300  rounded-lg focus:outline-none focus:border-gray-600 p-2 m-2" 
           type="text" name="search" 
           id="tag-search" placeholder="Recherchez" v-model="governor_id"  />
           <ul class="absolute bg-white w-full z-10 top-full left-0 right-0 py-1 mt-1 tags-search text-gray-800" v-if="filteredCategories.length > 0">
@@ -87,11 +103,11 @@
   </template>
   <script>
   import axios from 'axios';
-  
+
   export default { 
   
   name:"ObjectiveAPP",
-  
+     
   data(){
   return {
     objective:[],
@@ -100,32 +116,41 @@
     activate:false,
     T4deads: 0,
     T5deads:0,
-    simulator_on:false
+    simulator_on:false,
+    sliderValue:0,
+    kvk:[]
   }
   },
   async created(){
   
   this.list_governor=await this.get_governor()
+  this.kvk =await this.getkvk()
   },
   methods:{
-  // async get_objective(){
-  //   await axios.get(`${process.env.VUE_APP_URL_API}/api/objective/`)
-  //   .then(response =>{this.objective = response.data})
-  
-  //   return this.objective
-  // },
+
   async get_governor(){
-    await axios.get(`${process.env.VUE_APP_URL_API}/api/players/`)
+    delete axios.defaults.headers.common['Authorization'];
+
+    await axios.get(`${process.env.VUE_APP_URL_API}api/get_players/`)
     .then(response =>{this.list_governor = response.data})
-  
+    
     return this.list_governor
   
   },
+async getkvk(){
+  delete axios.defaults.headers.common['Authorization'];
+  let response_kvk = await axios.get(`${process.env.VUE_APP_URL_API}api/kvk_date/?ordering=-id&limit=1`)
+
+  return this.kvk = response_kvk.data.results
+},
   async selectedCategorie(cat){
+    delete axios.defaults.headers.common['Authorization'];
+      let id_kvk = document.querySelector('[name=id_kvk]').value;
+
         let governor_id =cat.governor_id
-  
-        await axios.get(`${process.env.VUE_APP_URL_API}/api/objective/?governor_id=${governor_id}`)
-      .then(response =>{this.objective = response.data})
+      
+        await axios.get(`${process.env.VUE_APP_URL_API}api/objective/?id_kvk=${id_kvk}&governor_id=${governor_id}`)
+      .then(response =>{this.objective = response.data,console.log(response)})
       this.governor_id=null
       return this.objective,this.governor_id
       },
@@ -158,6 +183,10 @@
         this.sliderValue=this.T4deads*80+this.T5deads*160
         return this.sliderValue
       },
+      replaceValue(str){
+        let new_str = str.replace('/_/',' ')
+        return new_str.toUpperCase()
+      }
   
   },
   computed:{

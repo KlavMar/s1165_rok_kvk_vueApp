@@ -33,7 +33,7 @@
         </form>
             <img   src="#" alt="" id="image" class="m-2 p-2" style="box-sizing: content-box; border-radius: 2em;">
         <div id="message" class="bg-white p-2 m-2 text-3xl font-bold text-gray-700 absolute inset-0 text-center" v-if="message">Data are send, redirect after 5sec </div>
-        <div class="m-2 p-2"  v-if="OcrData.length && !message ">
+        <div class="m-2 p-2 w-full"  v-if="OcrData.length && !message ">
 
           <h3 class="p-2 m-2 font-bold text-2xl text-gray-600">Résult</h3>
           <form  v-on:submit.prevent="FormSend" id="form_ocr" class="grid grid-cols-12 gap-6">
@@ -47,9 +47,9 @@
          
             <select  class=" col-span-12 font-semibold bg-gray-900 text-white input-gov w-full px-5 py-2 m-2 text-xl" name="id_account" >
 
-    <option v-for="(value,index) in data" :key="index"   :value="value.governor_id" :name="value.governor_id"> {{ value.governor_name }}</option>
+            <option v-for="(value,index) in data" :key="index"   :value="value.governor_id" :name="value.governor_id"> {{ value.governor_name }}</option>
 
-    </select>
+            </select>
 
             <fieldset  v-for="(data, index) in OcrData" :key="index" class="col-span-12" >
 
@@ -115,6 +115,7 @@
   </template>
   
   <script>
+  // import VueCookies from 'vue-cookies'
   import axios from 'axios';
   // import VueCookies from 'vue-cookies'
 
@@ -183,80 +184,20 @@
 
     },
 async created(){
-    
-//   let token = this.getToken();
-     
-//      if (!token) {
-//    // Le token n'existe pas, redirigez l'utilisateur vers la page de connexion
-//    this.$router.push({name:'login'}) // Assurez-vous d'ajuster le nom de votre route de connexion
-//  }
   this.data=await this.getGovernorName();
   this.typeTroops =await this.getTypeTroop();
   this.typeUnit = await this.getTypeUnit();
   this.kvk = await this.getKvk();
-  
-  setInterval(() => {
-      this.kvk.forEach((kvk) => {
-        if (this.shouldShowKVK(kvk)) {
-          // La fonction shouldShowKVK mettra à jour time_left
-        }
-      });
-    }, 1000);
+
+
 },
     methods: {
       changeTab(index) {
       this.currentTab = index;
     },
-    //   getToken() {
-    //     let token = VueCookies.get('jwt_token')
 
-      
-    //     return token
-    // },
-      // gestion des dates 
-      shouldShowKVK(kvk) {
-
-      const currentDate = new Date();
-      const endDate = new Date(kvk.date_end);
-      endDate.setDate(endDate.getDate() - 5);
-            // Calculer le temps restant en millisecondes
-      const timeRemaining = endDate - currentDate;
-      // Stocker le temps restant dans time_left
-      this.time_left = this.convertTime(timeRemaining/1000);
-
-      return currentDate >= endDate;
-    },
-    convertTime(time){
-          var reste=time;
-          var result='';
-
-          var nbJours=Math.floor(reste/(3600*24));
-          reste -= nbJours*24*3600;
-      
-          var nbHours=Math.floor(reste/3600);
-          reste -= nbHours*3600;
-      
-          var nbMinutes=Math.floor(reste/60);
-          reste -= nbMinutes*60;
-      
-          var nbSeconds=Math.ceil(reste);
-      
-          if (nbJours>0)
-              result=result+nbJours+'j ';
-      
-          if (nbHours>0)
-              result=result+nbHours+'h ';
-      
-          if (nbMinutes>0)
-              result=result+nbMinutes+'m ';
-      
-          if (nbSeconds>0)
-              result=result+nbSeconds+'s ';
-      
-          return result;
-},
       async getGovernorName(){
-                let url =`${process.env.VUE_APP_URL_API}api/players/`               
+                let url =`${process.env.VUE_APP_URL_API}api/get_players/`               
                 await axios.get(url)
                 .then(response=>{this.data = response.data})
                 return this.data
@@ -285,10 +226,11 @@ async created(){
         formData.append("image", this.$refs.imageInput.files[0]);
         this.count=0
         try {
-         
+          delete axios.defaults.headers.common['api-key'];
           const response = await axios.post(`${process.env.VUE_APP_URL_API_OCR}`, formData, {
             headers: {
-              'Content-Type': 'multipart/form-data'
+              'Content-Type': 'multipart/form-data',
+
             }
           });
           this.OcrData = response.data.data;
@@ -341,8 +283,10 @@ async created(){
   FormDataImg.append('image', imageFile);
   FormDataImg.append('id_account',parseInt(id_account))
   FormDataImg.append('id_name_kvk',parseInt(kvk[0]))
-  
-     await axios.post(`${process.env.VUE_APP_URL_API}api/hall_of_fame_img/`,FormDataImg);
+
+     await axios.post(`${process.env.VUE_APP_URL_API}api/hall_of_fame_img/`,FormDataImg,{headers:{'api-key': process.env.VUE_APP_API_KEY}})
+
+
   
   // Assurez-vous que les trois tableaux ont la même longueur
   if (typeUnits.length === typeTroops.length && typeTroops.length === values.length) {
@@ -355,14 +299,9 @@ async created(){
         "id_type_troops": parseInt(typeTroops[i]),
         "id_name_kvk":parseInt(kvk[0])
       };
-     
+    
 
-      if (values[i] > 0 && typeUnits[i]>3) {
-
-          await axios.post(`${process.env.VUE_APP_URL_API}api/hall_of_fame/`, data);
-
-  
-      }
+          await axios.post(`${process.env.VUE_APP_URL_API}api/hall_of_fame/`, data,{headers:{'api-key': process.env.VUE_APP_API_KEY}})
     }
   }
   this.message=true;

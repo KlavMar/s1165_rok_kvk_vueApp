@@ -154,7 +154,7 @@
                     account_choice_delete(event){
                         this.confirm=true;
                         this.data_account= event.options[event.selectedIndex].getAttribute('name');
-                        console.log(this.data_account)
+                     
                         this.id_data_account=event.value
                    
                     },
@@ -237,7 +237,7 @@
                 },
                 async FormUpdateAccount(){
                     let form = document.getElementById("form_update_account");
-                    console.log(form)
+               
                     const formData = {};
                       
                     for (let field of form.elements) {
@@ -272,14 +272,14 @@
                             }
                         formData[field.name]= field.value;
                     }    
-                    console.log(`${this.url}api/user_account/?id_account=${formData["id_account"]}`)
+                    
                     await axios({
                         method:"DELETE",
                         url:`${this.url}api/user_account/${formData["id_account"]}/`,
                         headers: {Accept:'application/json'}
                     })
                     .then()
-                    .catch(response=>{console.log(response)})
+           
                     .finally(this.getData(),this.isActiveDel=false)
 
                     return this.getData()

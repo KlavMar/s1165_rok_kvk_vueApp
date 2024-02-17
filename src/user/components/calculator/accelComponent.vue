@@ -7,7 +7,7 @@
         Select Account in Profil
     </div>
 
-<div class="flex flex-col p-2 m-2 " >
+<div class="flex flex-col p " >
    <div class="font-semibold p-2 m-2 " v-if="message">
     Your data is insert 
     <div class="flex flex-row justify-center items-center">
@@ -15,31 +15,35 @@
 
     </div>
    </div>
+   <div class="grid grid-cols-12 gap-4">
 
-    <form class="flex flex-col lg:flex-row  items-center w-full" id="accel_form" method="POST" v-on:submit.prevent="send_button">
+ 
+    <form class="col-span-12 xl:col-span-4 flex flex-col  w-full" id="accel_form" method="POST" v-on:submit.prevent="send_button">
 
-    <div class="flex flex-row border-2 border-blue-400 rounded-lg text-2xl justify-between items-cente p-2 m-2 w-full">
-        <select class="p-1 m-1 border-none outline-none w-full bg-transparent" name="id_type_accels">
+        <div class="flex flex-row border-2  font-medium rounded-lg justify-between items-center p-2 m-2">
+        <select class="p-2 m-2  w-full border-none outline-none rounded-lg text-xl" name="id_type_accels">
             <option v-for="(value,index) in type_accel"  :key="index" :value="value.id_type_accels">{{value.name_item_accel}}</option>
-          </select>
+        </select>
     </div>
+    
 
-    <div class="flex flex-row border-2 border-blue-400 rounded-lg justify-between items-center p-2 m-2">
-        <h4 class="text-2xl p-1 m-1 font-medium">Total</h4>
-        <input name="time_accel" class="text-lg text-gray-700 bg-transparent outline-none border-none font-medium m-1 p-1"  :value=convertTime(time_to_accel) >
+    <div class="flex flex-row border-2 font-medium rounded-lg justify-between items-center p-2 m-2">
+        <h4 class="text-xl font-medium p-2 m-2">Total</h4>
+        <input name="time_accel" class="text-lg text-gray-700 bg-transparent outline-none border-none font-medium m-2 p-2 text-end"  :value=convertTime(time_to_accel) >
         <input name="time_accel_sec" class="hidden"  :value=(time_to_accel) >
     </div>
-    <button  class="w-full btn p-4 m-2 rounded-lg font-semibold" :class="`${gradientBlue}`" type="submit">Save</button>
+    <button  class="w-full md:w-1/2 btn p-2 text-xl m-2 rounded-lg font-semibold" :class="`${gradientBlue}`" type="submit">Save</button>
    
     </form>
-    <main class="flex flex-col xl:grid xl:grid-cols-12 " >
+    <main class="flex flex-col xl:grid xl:grid-cols-12 w-full col-span-12 xl:col-span-8" >
        
-            <div v-for="(item, index) in meters" :key="index"  class="flex flex-row col-span-4 shadow-md bg-white
+            <div v-for="(item, index) in meters" :key="index"  class="flex flex-row col-span-12  xl:col-span-6 shadow-md relative
             justify-between items-center text-gray-700 p-2 m-2 rounded-lg border-l-4 border-blue-500 ">
-              <label class="font-semibold p-2 m-2 capitalize">{{item.label }}</label>
-              <input type="number" v-model="item.value" min="0" class="p-2 m-2 bg-transparent text-gray-700 font-bold text-end h-full rounded-lg focus:outline-blue-400">
-    </div>
+              <label class="font-semibold p-2 m-2 capitalize z-2 ">{{item.label }}</label>
+              <input type="number" v-model="item.value" min="0" class="p-2 m-2 font-bold text-end h-full rounded-lg border-2">
+        </div>
     </main>
+</div>
     </div>
     </div>
     </section>

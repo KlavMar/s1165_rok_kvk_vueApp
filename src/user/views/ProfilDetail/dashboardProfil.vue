@@ -1,54 +1,58 @@
 <template>
-    <div class="grid grid-cols-12 gap-6">
-      <div class="key_container col-span-12 xl:col-span-2 xl:shadow-lg">
-
+  <section class="bg-gray-900">
+    <div class="grid grid-cols-12 gap-6 w-full xl:w-10/12 2xl:w-8/12 mx-auto bg-white p-4 rounded-md">
+      <div class="key_container col-span-12 xl:col-span-2 ">
+        <div v-if="last_data.length>0">
             <section class="grid grid-cols-12 gap-4 my-2 p-2" v-for="(value,index) in last_data" :key="index">
-              <article class="col-span-12 p-10  bg-gray-50 font-bold rounded-2xl shadow-lg">
-                <h3 class="text-xl text-gray-400">Last Date</h3>
+              <article class="col-span-12 p-10  font-semibold text-gray-800 rounded-2xl shadow-lg">
+                <h3 class="text-2xl ">Last Date</h3>
                 {{ value.date }}
             </article>
-              <article class="col-span-12 p-10  bg-orange-50 font-bold rounded-2xl shadow-lg">
-                <h3 class="text-xl text-orange-400">Power</h3>
+              <article class="col-span-12 p-10  font-semibold text-gray-800 rounded-2xl shadow-lg">
+                <h3 class="text-2xl ">Power</h3>
                 {{ numberFormat(value.power) }}
             </article>
-            <article class="col-span-12 p-10  bg-green-50 font-bold rounded-2xl shadow-lg">
-                <h3 class="text-xl text-green-400">Kill Points</h3>
+            <article class="col-span-12 p-10  font-semibold text-gray-800 rounded-2xl shadow-lg">
+                <h3 class="text-2xl ">Kill Points</h3>
                 {{ numberFormat(value.kill_points) }} 
             </article>
-            <article class="col-span-12 p-10  bg-red-50 font-bold rounded-2xl shadow-lg">
-                <h3 class="text-xl text-red-400">Deads</h3>
+            <article class="col-span-12 p-10  font-semibold text-gray-800 rounded-2xl shadow-lg">
+                <h3 class="text-2xl ">Deads</h3>
                 {{ numberFormat(value.deads) }} 
               </article>
             
         </section>
+      </div>
 
     <hr>
+    <div v-if="rss.length>0">
         <section class="grid grid-cols-12 gap-4 my-2 p-2" v-for="(value,index) in rss" :key="index">
           
-            <article class="col-span-12 p-10  bg-amber-50 font-bold rounded-2xl shadow-lg">
+            <article class="col-span-12 p-10  0 font-bold rounded-2xl shadow-lg">
               <h3 class="text-xl text-amber-700">Wood</h3>
                 {{ numberFormat(value.wood) }}
             </article>
-            <article class="col-span-12 p-10  bg-green-50 font-bold rounded-2xl shadow-lg">
+            <article class="col-span-12 p-10   font-bold rounded-2xl shadow-lg">
               <h3 class="text-xl text-green-700">Food</h3>
                 {{ numberFormat(value.food) }} 
             </article>
-            <article class="col-span-12 p-10  bg-yellow-50 font-bold rounded-2xl shadow-lg">
+            <article class="col-span-12 p-10   font-bold rounded-2xl shadow-lg">
               <h3 class="text-xl text-yellow-700">Gold</h3>
                 {{ numberFormat(value.gold) }} 
               </article>
-              <article class="col-span-12 p-10  bg-gray-100 font-bold rounded-2xl shadow-lg">
+              <article class="col-span-12 p-10   font-bold rounded-2xl shadow-lg">
               <h3 class="text-xl text-gray-700">Stone</h3>
                 {{ numberFormat(value.stone) }} 
               </article>
             
         </section>
         </div>
+        </div>
 
         <section class="  graph_container col-span-12 xl:col-span-10">
           
-          <section class="flex flex-col xl:flex-row justify-center items-center p-2 my-2 w-full" >
-          
+          <section class="flex flex-col xl:flex-row justify-center items-center p-2 my-2 w-full" v-if="accel_user.length>0" >
+  
           <article class=" p-10 w-full m-2  bg-indigo-50 font-bold rounded-2xl shadow-lg" v-for="(value,index) in accel_user" :key="index">
             <h3 class="text-xl text-indigo-700">{{value.id_type_accels.name_item_accel}}</h3>
                     {{convertTime(value.time_accel)}}
@@ -67,14 +71,16 @@
           </article>
         </section>
 
+
     </div>
- 
+  </section>
   </template>
 
 
   <script>
   import axios from 'axios';
   import * as d3 from 'd3';
+
   
   export default {
     data() {
@@ -138,7 +144,8 @@
       async getData() {
         try {
         const governorId = this.$route.params.governor_id;
-          const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/kill_power_user/?governor_id=${governorId}&type=json`);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${this.$cookies.get('jwt_token')}`;
+          const response = await axios.get(`${process.env.VUE_APP_URL_API}api/data/?governor_id=${governorId}&type=json`);
           this.data_chart = response.data.results;
           return this.data_chart;
         } catch (error) {
@@ -155,7 +162,7 @@
         
         try {
         const governorId = this.$route.params.governor_id;
-          const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/kill_power_user/?governor_id=${governorId}&ordering=-id&limit=1&type=json`);
+          const response = await axios.get(`${process.env.VUE_APP_URL_API}api/data/?governor_id=${governorId}&ordering=-id&limit=1&type=json`);
           this.last_data = response.data.results;
           return this.last_data;
         } catch (error) {
@@ -166,57 +173,57 @@
       async getInfantry(){
         try{
             const governorId = this.$route.params.governor_id;
-            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/troop_user/?id_account=${governorId}&id_type_troops=1&date_gte=2023-01-01`)
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}api/troop_user/?id_account=${governorId}&id_type_troops=1&date_gte=2023-01-01`)
             this.infantry=response.data.results;
             return this.infantry
         }
         catch(error){
-            console.log(error)
+           this.$router.push({name:"profil"})
         }
       },
       async getCavalry(){
         try{
             const governorId = this.$route.params.governor_id;
-            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/troop_user/?id_account=${governorId}&id_type_troops=3&date_gte=2023-01-01`)
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}api/troop_user/?id_account=${governorId}&id_type_troops=3&date_gte=2023-01-01`)
             this.cavalry=response.data.results;
             return this.cavalry
         }
         catch(error){
-            console.log(error)
+          this.$router.push({name:"profil"})
         }
       },
       async getArchers(){
         try{
             const governorId = this.$route.params.governor_id;
-            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/troop_user/?id_account=${governorId}&id_type_troops=2&date_gte=2023-01-01`)
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}api/troop_user/?id_account=${governorId}&id_type_troops=2&date_gte=2023-01-01`)
             this.archers=response.data.results;
             return this.archers
         }
         catch(error){
-            console.log(error)
+          this.$router.push({name:"profil"})
         }
       },
       async getTreb(){
         try{
             const governorId = this.$route.params.governor_id;
-            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/troop_user/?id_account=${governorId}&id_type_troops=4&date_gte=2023-01-01`)
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}api/troop_user/?id_account=${governorId}&id_type_troops=4&date_gte=2023-01-01`)
             this.treb=response.data.results;
             return this.treb
         }
         catch(error){
-            console.log(error)
+          this.$router.push({name:"profil"})
         }
       },
       async getRss(){
         try{
             const governorId = this.$route.params.governor_id;
-            const response = await axios.get(`${process.env.VUE_APP_URL_API}/api/ressource_user/?id_account=${governorId}&ordering=-id&limit=1`);
+            const response = await axios.get(`${process.env.VUE_APP_URL_API}api/ressource_user/?id_account=${governorId}&ordering=-id&limit=1`);
             this.rss = response.data.results
         
             return this.rss
         }
         catch(error){
-            console.log(error)
+          
             this.$router.push({name:"login"})
         }
       },
@@ -224,28 +231,31 @@
         try{
             const governorId = this.$route.params.governor_id;
             const promises = [
-        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=1&ordering=-id&limit=1`),
-        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=2&ordering=-id&limit=1`),
-        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=3&ordering=-id&limit=1`),
-        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=4&ordering=-id&limit=1`),
-        axios.get(`${process.env.VUE_APP_URL_API}/api/accel_user/?id_account=${governorId}&id_type_accels=5&ordering=-id&limit=1`)
+        axios.get(`${process.env.VUE_APP_URL_API}api/accel_user/?id_account=${governorId}&id_type_accels=1&ordering=-id&limit=1`),
+        axios.get(`${process.env.VUE_APP_URL_API}api/accel_user/?id_account=${governorId}&id_type_accels=2&ordering=-id&limit=1`),
+        axios.get(`${process.env.VUE_APP_URL_API}api/accel_user/?id_account=${governorId}&id_type_accels=3&ordering=-id&limit=1`),
+        axios.get(`${process.env.VUE_APP_URL_API}api/accel_user/?id_account=${governorId}&id_type_accels=4&ordering=-id&limit=1`),
+        axios.get(`${process.env.VUE_APP_URL_API}api/accel_user/?id_account=${governorId}&id_type_accels=5&ordering=-id&limit=1`)
     ];
 
         const responses = await Promise.all(promises);
+        
+
       this.accel_user = responses.map(response => response.data.results[0]);
-  
+    
             return this.accel_user
+            
         }
         catch(error){
-            console.log(error)
-            return []
+        
+            return this.accel_user=null
         }
       },
     
 
       createChart(data,ref_chart,x_data,y_data,title,color_line) {
 
-        const margin = { top: 50, right: 0, bottom: 0, left: 0 };
+        const margin = { top: 50, right: 30, bottom: 20, left: 100 };
         const container = ref_chart
         const width = container.clientWidth - margin.left - margin.right;
         const height = (container.clientWidth * 0.75) - margin.top - margin.bottom; // Utilisez le ratio pour la hauteur
@@ -347,7 +357,7 @@
         // Personnalisez davantage le graphique selon vos besoins
       },
       createChartTwice(data, ref_chart, x_data, y_data, title, color_line, color_line_2) {
-  const margin = { top: 50, right: 0, bottom: 0, left: 0 };
+  const margin = { top: 50, right:30, bottom: 20, left: 100 };
   const container = d3.select(ref_chart);
   const width = container.node().clientWidth - margin.left - margin.right;
   const height = (container.node().clientWidth * 0.75) - margin.top - margin.bottom;
@@ -514,7 +524,7 @@ circles2.on("mouseover", function (event, d) {
   tooltip.html(`${filteredLabels[1]} : ${formatNumber(d[y_data])}`)
   .style("left", x + "px")
     .style("top", y + "px")
-    .attr("class"," text-white absolute top-0 -left-24 right-0   text-lg font-bold p-2 m-2")
+    .attr("class"," text-white absolute top-0 left-0 text-lg font-bold p-2 m-2")
     .style("background",color_line_2)
     .style("height","auto")
     .style("width","10%")
@@ -542,8 +552,18 @@ convertTime(seconds) {
   };
   </script>
     <style>
-    .graph {
-   height: 30em;
-        
-    }
+.iframe-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding-top: 56.25%; /* Ratio 16:9 (adjust as needed) */
+}
+
+iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
     </style>

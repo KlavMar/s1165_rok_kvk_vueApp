@@ -28,7 +28,5 @@ export default {
 
 <style scoped>
 
-section{
-    font-family: 'Orbitron' !important;
-   }
+
 </style>

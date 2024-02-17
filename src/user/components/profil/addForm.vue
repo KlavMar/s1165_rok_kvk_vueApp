@@ -1,6 +1,6 @@
 <template>
 
-    <section class="flex flex-col w-max-full">
+    <section class="flex flex-col w-max-full xl:w-4/12 mx-auto">
     <div id ="data_user" class=" relative p-2 m-2" >
         <div class="flex grid grid-cols-12 gap-4 py-2 my-2 ">
             
@@ -21,7 +21,7 @@
     
     
         <!-- add account -->
-        <form  v-show="isActiveAdd" id="form_add" class=" modal flex flex-col flex-wrap bg-white rounded-lg p-2 m-2 " aria-label="add-account" method="POST"  v-on:submit.prevent="FormAddAccount">
+        <form  v-show="isActiveAdd" id="form_add" class=" flex flex-col flex-wrap bg-white rounded-lg p-2 m-2 " aria-label="add-account" method="POST"  v-on:submit.prevent="FormAddAccount">
           
          
                 <input type="number" name="id_account" class="input" placeholder="Id account">
@@ -154,7 +154,7 @@
                     account_choice_delete(event){
                         this.confirm=true;
                         this.data_account= event.options[event.selectedIndex].getAttribute('name');
-                        console.log(this.data_account)
+                
                         this.id_data_account=event.value
                    
                     },
@@ -237,7 +237,7 @@
                 },
                 async FormUpdateAccount(){
                     let form = document.getElementById("form_update_account");
-                    console.log(form)
+
                     const formData = {};
                       
                     for (let field of form.elements) {
@@ -272,14 +272,13 @@
                             }
                         formData[field.name]= field.value;
                     }    
-                    console.log(`${this.url}api/user_account/?id_account=${formData["id_account"]}`)
+                   
                     await axios({
                         method:"DELETE",
                         url:`${this.url}api/user_account/${formData["id_account"]}/`,
                         headers: {Accept:'application/json'}
                     })
                     .then()
-                    .catch(response=>{console.log(response)})
                     .finally(this.getData(),this.isActiveDel=false)
 
                     return this.getData()
@@ -291,10 +290,7 @@
         </script>
         <style  scoped>
             .modal{
-                position: absolute;
-                inset:0;
-                height:auto;
-    
+
             }
 
         </style>

@@ -52,7 +52,7 @@ export default {
                     return this.list_data;
                 }
                 catch(error){
-                    console.log(error)
+            
                     return []
                 }
         },

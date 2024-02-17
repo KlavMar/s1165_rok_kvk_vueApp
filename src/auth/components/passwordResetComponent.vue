@@ -45,7 +45,7 @@ export default{
 
     methods:{
       resetPassword() {
-      axios.post('http://127.0.0.1:8000/authentification/password_reset/', { email: this.email })
+      axios.post(`${process.env.VUE_APP_URL_API}authentification/password_reset/`, { email: this.email })
         .then(response => {this.message=response.data.message})
         .catch(error => {
           if (error.response.status === 400) {

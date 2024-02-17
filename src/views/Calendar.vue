@@ -19,6 +19,10 @@ export default{
                     {
                         title:"Orleans",
                         link:"https://docs.google.com/spreadsheets/d/1uBTM0b168yt_RVEKL5kOruFlmwDRufnV7gjBTJK4Xro/edit?usp=sharing"
+                    },
+                    {
+                    title:"Tides of War",
+                    link:"https://docs.google.com/spreadsheets/d/1Fbz64DFMYfLcpzzdCckI5ZwjDSaORjMVDqdoJ-ymkcE/edit?usp=sharing"
                     }
                 ]
         }

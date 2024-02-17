@@ -1,16 +1,18 @@
 <template>
 
-    <section class="flex flex-col w-max-full">
+    <section class="flex flex-col w-max-full  xl:w-10/12 2xl:w-8/12 mx-auto min-h-screen">
     <div id ="data_user" class=" relative p-2 m-2" >
         <div class="flex grid grid-cols-12 gap-4 py-2 my-2 ">
-            
+            <p class="col-span-12 text-xl font-bold p-2 m-2" v-if="data.length==0">You have no Profil please Add</p>
             <button class="col-span-4 w-full xl:col-span-1 btn bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 text-blue-200 px-5 py-2 m-2 rounded-lg font-semibold"  @click="add_button">Add</button>
+
             <button class="col-span-4 w-full  xl:col-span-1 btn bg-gradient-to-br from-yellow-500 via-amber-500 to-orange-500 text-yellow-200 px-5 py-2 m-2 rounded-lg font-semibold"  v-if="data.length>0" @click="update_button">Update</button>
             <button class="col-span-4 w-full xl:col-span-1 btn bg-gradient-to-br from-red-500 via-rose-500 to-pink-500 text-red-200 px-5 py-2 m-2 rounded-lg font-semibold"   v-if="data.length>0" @click="delete_button">Delete</button>
         </div>
         <div class="flex flex-col xl:grid xl:grid-cols-12 gap-6 flex-wrap p-2 m-2">
-            <router-link :to="{name:'dashboard', params:{governor_id:value.id_account}}" @click="createCookieGov(value.id_account)" class="font-semibold hover:bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 hover:text-gray-50 bg-white hover:shadow-2xl 
-            w-full col-span-6 rounded-lg p-5 m-2 text-xl" v-for="(value,index) in data" :key="index" ><h1>{{value.governor_name}}</h1>
+            <router-link :to="{name:'dashboard', params:{governor_id:value.id_account}}" @click="createCookieGov(value.id_account)" 
+            class="font-semibold hover:bg-gradient-to-br from-blue-700  to-sky-900 hover:text-gray-50 bg-white hover:shadow-2xl 
+            w-full col-span-4 rounded-lg p-5 m-2 text-xl" v-for="(value,index) in data" :key="index" ><h1>{{value.governor_name}}</h1>
                 <div class="card-user-data">
                     <small class="text-lg color-gray-600">{{value.date_updated}}</small>
                     <p>{{value.id_alliance.name_alliance}}</p>
@@ -21,71 +23,84 @@
     
     
         <!-- add account -->
-        <form  v-show="isActiveAdd" id="form_add" class=" modal flex flex-col flex-wrap bg-white rounded-lg p-2 m-2 " aria-label="add-account" method="POST"  v-on:submit.prevent="FormAddAccount">
+
+
+
+        <form  v-show="isActiveAdd" id="form_add" 
+        class=" modal flex flex-col justify-center items-center rounded-lg  bg-gradient-to-br from-blue-800 via--sky-600 to-cyan-500 font-semibold text-gray-700 text-xl  p-10" 
+        aria-label="add-account" method="POST"  v-on:submit.prevent="FormAddAccount">
           
-         
-                <input type="number" name="id_account" class="input" placeholder="Id account">
-                <input type="text" name="governor_name" placeholder="Nom de joueur" class="input">
+            <fieldset class="grid grid-cols-12 gap-8 w-full xl:w-1/3">
+                <input type="number" name="id_account" class="p-2 m-2 col-span-12 focus:outline focus:outline-2 outline-blue-500 rounded-lg" placeholder="Id account">
+                <input type="text" name="governor_name" placeholder="governor Name" class="p-2 m-2 col-span-12  focus:outline focus:outline-2 outline-blue-500 rounded-lg">
                 
-                <select name="id_type_account" class="input">
+                <select name="id_type_account" class="p-2 m-2 col-span-12  focus:outline focus:outline-2 outline-purple-500 rounded-lg">
                     <option v-for="(option,index) in type_account" :key="index" :value="option.id_type_account">{{option.name_type_account}}</option>
                 </select>
-                <select  @change="get_alliance($event.target.value)" name="id_kingdom" class="input" required="required">
-                    <option></option>
+                <select  @change="get_alliance($event.target.value)" name="id_kingdom" class="p-2 m-2 col-span-12 focus:outline focus:b-2 outline-blue-500 rounded-lg"
+                required="required">
+                    <option>Choose your Kingdom please click</option>
                     <option  v-for="(option,index) in kingdom" :key="index" :value="option.id_kingdom">{{option.id_kingdom}} - {{option.name_kingdom}}</option>
                 </select>
-                <select name="id_alliance" class="input" required="required">
+                <select name="id_alliance" class="p-2 m-2 col-span-12 focus:outline focus:outline-2 outline-purple-500 rounded-lg"
+                required="required">
                     <option v-for="(option,index) in alliance" :key="index" :value="option.id_alliance"> {{option.name_alliance}}</option>
                 </select>
-                <div class="grid grid-cols-12 gap-4 w-full  my-2 py-2">
+     
                     <button type="submit" class=" col-span-6 w-full xl:col-span-3 btn bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 text-blue-200 px-5 py-2 rounded-lg font-semibold" >confirm</button>
                     <button class="col-span-6 w-full xl:col-span-3 btn bg-gradient-to-br from-red-500 via-rose-500 to-pink-500 text-red-200  px-5 py-2 rounded-lg font-semibold"  @click.prevent="cancel_button">Cancel</button>
-                </div>
-        
+          
+            </fieldset>
         </form>
         <!-- end add account-->
     
         <!-- update account -->
         <form method="POST" id="form_update_account" arial-label="form_update_account" 
-        class=" modal flex flex-col bg-white rounded-lg p-2 m-2"
-        aria-label="update-account" v-show="isActiveUpdate"  v-on:submit.prevent="FormUpdateAccount">
-    
-            <select  class="input" v-model="id_account" name="id_account">
-                <option value="Choisir le compte"></option>
-                <option v-for="(value,index) in data" :key="index" :value="value.id_account" >{{value.governor_name}}</option>
-            </select>
-    
-            <select name="id_type_account" class="input">
-                <option v-for="(option,index) in type_account" :key="index" :value="option.id_type_account">{{option.name_type_account}}</option>
-            </select>
-            <select  @change="get_alliance($event.target.value)" name="id_kingdom" class="input" required="required">
-                <option value="Choix du Royaume"></option>
-                <option  v-for="(option,index) in kingdom" :key="index" :value="option.id_kingdom">{{option.id_kingdom}} - {{option.name_kingdom}}</option>
-            </select>
-            <select name="id_alliance" class="input" required="required">
-                <option v-for="(option,index) in alliance" :key="index" :value="option.id_alliance"> {{option.name_alliance}}</option>
-            </select>
-    
-            <div class="grid grid-cols-12 gap-4 my-2 py-2">
-                <button type="submit" class=" col-span-6 w-full xl:col-span-3 btn bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 text-blue-200 px-5 py-2 rounded-lg font-semibold" >confirm</button>
-                <button class="col-span-6 w-full  xl:col-span-3  btn bg-gradient-to-br from-red-500 via-rose-500 to-pink-500 text-red-200  px-5 py-2 rounded-lg font-semibold"  @click.prevent="cancel_button">Cancel</button>
-            </div>
+        class=" modal flex flex-col justify-center items-center rounded-lg  bg-gradient-to-br from-amber-500 to-yellow-500  min-h-screen p-10"
+                aria-label="update-account" v-show="isActiveUpdate"  v-on:submit.prevent="FormUpdateAccount">
+        <fieldset class="grid grid-cols-12 gap-4 w-full xl:w-1/3">
+                <input type="number" name="id_account" class="p-2 m-2 col-span-12 focus:outline focus:outline-2 outline-blue-500 rounded-lg" placeholder="Id account">
+                <input type="text" name="governor_name" placeholder="governor Name" class="p-2 m-2 col-span-12  focus:outline focus:outline-2 outline-amber-500 rounded-lg">
+                
+                <select name="id_type_account" class="p-2 m-2 col-span-12  focus:outline focus:outline-2 outline-purple-500 rounded-lg">
+                    <option v-for="(option,index) in type_account" :key="index" :value="option.id_type_account">{{option.name_type_account}}</option>
+                </select>
+                <select  @change="get_alliance($event.target.value)" name="id_kingdom" class="p-2 m-2 col-span-12 focus:outline focus:b-2 outline-blue-500 rounded-lg"
+                required="required">
+                    <option>Choose your Kingdom please click</option>
+                    <option  v-for="(option,index) in kingdom" :key="index" :value="option.id_kingdom">{{option.id_kingdom}} - {{option.name_kingdom}}</option>
+                </select>
+                <select name="id_alliance" class="p-2 m-2 col-span-12 focus:outline focus:outline-2 outline-purple-500 rounded-lg"
+                required="required">
+                    <option v-for="(option,index) in alliance" :key="index" :value="option.id_alliance"> {{option.name_alliance}}</option>
+                </select>
      
+                    <button type="submit" class=" col-span-6 w-full xl:col-span-3 btn bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 text-blue-200 px-5 py-2 rounded-lg font-semibold" >confirm</button>
+                    <button class="col-span-6 w-full xl:col-span-3 btn bg-gradient-to-br from-red-500 via-rose-500 to-pink-500 text-red-200  px-5 py-2 rounded-lg font-semibold"  @click.prevent="cancel_button">Cancel</button>
+          
+            </fieldset>
         </form>
     
             <!-- del account-->
-            <form method="POST" class=" modal flex flex-col flex-wrap bg-white rounded-lg p-2 m-2 delete-account" 
+            <form method="POST" 
+        class=" modal flex flex-col justify-center items-center rounded-lg absolute bg-gradient-to-br from-red-500 to-orange-500  p-10" 
+
         aria-label="delete-account" v-show="isActiveDel" id="form_delete_account" v-on:submit.prevent="FormDeleteAccount">  
-            <select @change="account_choice_delete($event.target)" class="input" name="id_account">
+        <fieldset class="grid grid-cols-12 gap-4">
+            <select @change="account_choice_delete($event.target)" class="p-2 m-2 col-span-12 xl:col-span-3 focus:outline focus:outline-2 outline-red-500 rounded-lg" name="id_account">
                 <option value="">Choose account to delete</option>
                 <option v-for="(value,index) in data" :key="index" :value="value.id_account" :name="value.governor_name">{{value.governor_name}}</option>
             </select>
+            <div class="col-span-12">
             <div class="grid grid-cols-12  gap-4 w-full my-2 py-2"  v-show="confirm">
-                <p class="col-span-12 text-lg color-red-700 font-bold m-2 p-3">You are about to delete the account {{data_account}}</p>
-                <button type="submit" class=" col-span-6 w-full xl:col-span-6 btn bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 text-blue-200 px-5 py-2 rounded-lg font-semibold" >confirm</button>
-                <button class="col-span-6 w-full xl:col-span-6  btn bg-gradient-to-br from-red-500 via-rose-500 to-pink-500 text-red-200  px-5 py-2 rounded-lg font-semibold"  @click.prevent="cancel_button">Cancel</button>
-            </div>
+                <p class="col-span-12 text-lg text-gray-50 font-bold m-2 p-3">You are about to delete the account {{data_account}}</p>
+                <button type="submit" class=" col-span-6 w-full xl:col-span-3 btn bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 text-blue-200 px-5 py-2 rounded-lg font-semibold" >confirm</button>
+                <button class="col-span-6 w-full xl:col-span-3 btn bg-gradient-to-br from-red-500 via-rose-500 to-pink-500 text-red-200  px-5 py-2 rounded-lg font-semibold"  @click.prevent="cancel_button">Cancel</button>
+          </div>
+        </div>
+          </fieldset>
         </form>
+
         <!-- end del account-->
       
             
@@ -95,6 +110,7 @@
         <script>
     import axios from 'axios';
     import VueCookies from 'vue-cookies'
+
     export default {
       watch: {
       },
@@ -112,23 +128,24 @@
                         data_account:false,
                         id_data_account:false,
                         id_account:'',
-                        url :`${process.env.VUE_APP_URL_API}`,
                         user_id:''
+      
                       
                     }
                 },
-                mounted(){
-                    this.user_id= VueCookies.get('user_id')
-                },
                 async created() {
            
-                    this.kingdom=await this.getKingdom()
-                    this.data= await this.getData()
-                    this.type_account=await this.getTypeAccount() 
-                    this.data = await this.getData()       
-           
-             
-                },
+
+                        this.user_id = this.$cookies.get('user_id')
+
+                        this.kingdom=await this.getKingdom();
+                        this.data= await this.getData();
+                        this.type_account=await this.getTypeAccount();
+                        this.data = await this.getData();   
+                    
+                    },
+
+
                 methods:{
     
                     add_button(){
@@ -155,43 +172,39 @@
                     account_choice_delete(event){
                         this.confirm=true;
                         this.data_account= event.options[event.selectedIndex].getAttribute('name');
-                        console.log(this.data_account)
+                    
                         this.id_data_account=event.value
                    
                     },
                     async getData(){
                     try{
                         
-                        let url =`${this.url}api/user_account/?user_id=${this.user_id}&ordering=-power`
+                        let url =`${process.env.VUE_APP_URL_API}api/user_account/?user_id=${this.user_id}&ordering=-power`
                
                       const response =   await axios.get(url)
                         if (response.status== 200){
                             return this.data = response.data.results
                         }
                         else{
-                            this.$router.push({name:'login'});
-                            VueCookies.remove('jwt_token');
-                            this.$store.commit('setLoggedIn',false);
+                          return this.data = []
                         }
                         
                     }
                         catch(error)
                     {
-                        this.$router.push({name:'login'});
-                        VueCookies.remove('jwt_token');
-                        this.$store.commit('setLoggedIn',false);
+                        return this.data = []
                     }
                 
                 },
                     async getKingdom(){
-                        await axios.get(`${this.url}api/kingdom/?ordering=${this.id_kingdom}`)
+                        await axios.get(`${process.env.VUE_APP_URL_API}api/kingdom/`)
                         .then(response => {
                             this.kingdom = response.data.results})
                         return this.kingdom
                     
                     },
                     async getTypeAccount(){
-                        await axios.get(`${this.url}api/type_account/`)
+                        await axios.get(`${process.env.VUE_APP_URL_API}api/type_account/`)
                         .then(response => {
                             this.type_account = response.data.results
                         })
@@ -199,7 +212,7 @@
                     },
                 async get_alliance(id){
                   
-                    await axios.get(`${this.url}api/alliance/?id_kingdom=${id}`)
+                    await axios.get(`${process.env.VUE_APP_URL_API}api/alliance/?id_kingdom=${id}`)
                     .then(response=>{this.alliance=response.data.results})
                     
                 },
@@ -207,6 +220,7 @@
                         event.preventDefault();
                     },
                     createCookieGov(governor_id){
+            
                         VueCookies.set("governor_id",governor_id)
                     },
                 async FormAddAccount(){
@@ -223,16 +237,14 @@
                     let governor_name = document.querySelector('[name=governor_name]').value;
                     let id_kingdom = document.querySelector('[name=id_kingdom]').value;
                     let id_alliance = document.querySelector('[name=id_alliance]').value;
-                    if (id_alliance.lenght==0){
-                        alert("Error please choose alliance")
-                    }
+
                     let id_type_account = document.querySelector('[name=id_type_account]').value;
                     this.isActiveAdd=false
         
     
                     await axios({
                         method:"POST",
-                        url:`${this.url}api/user_account/`,
+                        url:`${process.env.VUE_APP_URL_API}api/user_account/`,
                         data:
                         {
                             id_account: id_account,
@@ -250,7 +262,7 @@
                 },
                 async FormUpdateAccount(){
                     let form = document.getElementById("form_update_account");
-                    console.log(form)
+                    
                     const formData = {};
                       
                     for (let field of form.elements) {
@@ -263,13 +275,12 @@
                 
                     await axios({
                         method:"PATCH",
-                        url:`${this.url}api/user_account/${this.id_account}/`,
+                        url:`${process.env.VUE_APP_URL_API}api/user_account/${this.id_account}/`,
                         data:formData,
                         
                     })
                     .then(this.getData())
                     .then(this.isActiveUpdate=false)
-                    .catch(response=>{alert(response)})
 
                     return this.getData()
     
@@ -285,14 +296,14 @@
                             }
                         formData[field.name]= field.value;
                     }    
-                    console.log(`${this.url}api/user_account/?id_account=${formData["id_account"]}`)
+           
                     await axios({
                         method:"DELETE",
-                        url:`${this.url}api/user_account/${formData["id_account"]}/`,
+                        url:`${process.env.VUE_APP_URL_API}api/user_account/${formData["id_account"]}/`,
                         headers: {Accept:'application/json'}
                     })
                     .then()
-                    .catch(response=>{console.log(response)})
+                   
                     .finally(this.getData(),this.isActiveDel=false)
 
                     return this.getData()
@@ -304,9 +315,13 @@
         </script>
         <style  scoped>
             .modal{
-                position: absolute;
+                position: fixed;
                 inset:0;
-                height:auto;
+                width: auto;    
+                z-index: 1;
+                
+                height: auto;
+                
     
             }
 

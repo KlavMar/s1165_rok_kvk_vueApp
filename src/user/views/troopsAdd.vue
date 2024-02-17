@@ -76,6 +76,7 @@
   
   <script>
   import axios from 'axios';
+
   // import VueCookies from 'vue-cookies'
 
   export default {
@@ -131,18 +132,19 @@ async created(){
         this.count=0
         try {
          // const response = await axios.post(`${process.env.VUE_APP_URL_API_OCR}`, formData, {
-            delete axios.defaults.headers.common['Authorization'];
+            delete axios.defaults.headers.common['api-key'];
             const response = await axios.post(`${process.env.VUE_APP_URL_API_OCR_TROOPS}`, formData, {
             headers: {
-              'Content-Type': 'multipart/form-data'
+              'Content-Type': 'multipart/form-data',
+          
             }
           });
-          console.log(response)
+         
           this.OcrData = response.data.data;
 
         } 
         catch(error){
-            console.log(error)
+          this.$router.push({name:"profil"})
         }
         finally {
          
@@ -179,24 +181,22 @@ async created(){
         const typeUnits = formData.getAll('type_units');
         const typeTroops = formData.getAll('type_troops');
         const value_troop = formData.getAll('value');
+        // let token = VueCookies.get('jwt_token');
     //  await axios.post(`${process.env.VUE_APP_URL_API}api/troops_user/`);
     for (let i = 0; i < typeUnits.length; i++) {
 
       let data ={
-    "value_troop": parseInt(value_troop),
+    "value_troop": parseInt(value_troop[i]),
     "id_account": parseInt(id_account),
-    "id_type_unit": parseInt(typeUnits),
-    "id_type_troops": parseInt(typeTroops)
+    "id_type_unit": parseInt(typeUnits[i]),
+    "id_type_troops": parseInt(typeTroops[i])
 }
-  console.log(data)
-
-       await axios.post(`${process.env.VUE_APP_URL_API}api/troop_user/`, data);
-    }
 
 
-
+       await axios.post(`${process.env.VUE_APP_URL_API}api/troop_user/`, data,{headers:{'api-key': process.env.VUE_APP_API_KEY}})
+        }
   this.message=true;
-  return  setTimeout(() => {this.$router.push({ name: 'nav', params: { governor_id: this.$route.params.governor_id } });
+  return  setTimeout(() => {this.$router.push({ name: 'dashboard', params: { governor_id: this.$route.params.governor_id } });
                             }, 3000);
                             
 
@@ -276,10 +276,7 @@ async created(){
   filter: blur(15px);
 }
 
-.input-gov{
- 
 
-}
 
 .tabs div {
 
@@ -291,9 +288,6 @@ background-color: #fff;
 border-bottom: 1px solid #fff;
 }
 
-.tab-content div {
-
-}
 
 .tab-content div.show {
 display: block;

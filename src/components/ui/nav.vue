@@ -1,6 +1,25 @@
 <template>
-        <nav class="flex flex-col xl:flex-row items-center justify-center  bg-gray-900" >
-          <section class="container_nav_offline flex flex-col xl:flex-row items-center justify-center">
+        <nav class="flex flex-col xl:flex-row items-center justify-center  w-full h-24 xl:h-32 shadow-lg  bg-gray-900" >
+          <!-- bouton open-->
+    <button class="flex items-end  font-bold z-40 p-3 absolute top-1 left-1 xl:hidden text-gray-50 bg-gray-900" @click="openav" aria-label="open nav">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+      
+    </button>
+    <!-- end button -->
+    <div id="block-nav" 
+  class=" z-40 xl:z-1 flex flex-col  w-full  fixed  sm:h-screen xl:h-32 xl:justify-center xl:items-center  inset-0 xl:flex xl:relative xl:flex-row  font-bold
+nav-color-play bg-gray-900" 
+  :class="{'hidden': !btn}">
+
+      <button class="flex items-end  p-2 m-2 text-gray-50 font-bold top-1 left-0 xl:hidden"  @click="openav" aria-label="close nav">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </button>
+
+          <section class="container_nav_offline flex flex-col xl:flex-row xl:items-center xl:justify-center"  v-if="$store.state.isLoggedIn">
     
             <router-link class=" text-white font-semibold p-2 m-2" :to="{name:'home'}">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
@@ -12,14 +31,15 @@
 
         <div class="relative p-2 m-2 "   
       @mouseover="setDropdownIndexExt(index)" @mouseleave="resetDropdownIndex"
-      v-for="(value_,index) in nav_ext" :key="index">
-      <div v-if="value_.title != 'Admin'" class="text-gray-50 font-bold text-xl">
+      v-for="(value_,index) in nav_ext" :key="index" >
+      <div v-if="value_.title != 'Admin'" class="text-gray-50 font-bold text-xl ">
         <button>{{value_.title}}</button>
-        <div v-show="openExtNav && currentDropdownIndex === index" class="absolute top-15 left-0 mt-2  rounded-xl bg-gray-50   w-96 z-10  ">
+        <div v-show="openExtNav && currentDropdownIndex === index" 
+        class="absolute top-15 left-0 mt-2  rounded-xl w-96  z-10 bg-gradient-to-br from-red-500 to-orange-500  ">
 
-          <div class="flex flex-col text-gray-900"  role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+          <div class="flex flex-col p-2 m-2"  role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             
-            <a class="w-full p-2 m-2 "  v-for="(value,index) in value_.content" :key="index" :href="`${value.link}`">{{value.name}} </a>
+            <a class="w-full p-2 m-2 "  v-for="(value,index) in value_.content" :key="index" :href="`${value.link}`"  :data-token="token">{{value.name}} </a>
           </div>
         </div>
       </div>
@@ -28,25 +48,24 @@
   </section>
 
 
-  <section class="container_nav_online flex flex-col xl:flex-row p-2 m-2 justify-center items-center"  v-if="$store.state.isLoggedIn">
-    <router-link class="text-white font-bold p-2 m-2 text-xl" :to="{name :'post'}" >Infos </router-link>
+  <section class="container_nav_online flex flex-col xl:flex-row  xl:justify-center xl:items-center"  v-if="$store.state.isLoggedIn">
             <div class="relative p-2 m-2"
       
       @mouseover="setDropdownIndex(index)" @mouseleave="resetDropdownIndex"
       v-for="(value_,index) in nav" :key="index">
       <div  class="text-gray-50 font-bold text-xl">
-        <button v-html=value_.title></button>
-        <div v-show="isDropdownOpen && currentDropdownIndex === index" class="absolute top-15 left-0 mt-2  rounded-xl bg-gray-50   w-96 z-10  ">
+        <button class="flex justify-center items-center" v-html=value_.title></button>
+        <div v-show="isDropdownOpen && currentDropdownIndex === index" 
+        class="absolute top-15 left-0 mt-2  rounded-xl w-96  z-10 bg-gradient-to-br from-red-500 to-orange-500  ">
 
-          <div class="flex flex-col text-gray-900"  role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-            <ul v-for="(value,index) in value_.content" :key="index" class="flex flex-col">
-              <router-link class="w-full p-2 m-2 "   :to="{name:`${value.name_route}`}">{{value.name}} </router-link>
+          <div v-for="(value,index) in value_.content" :key="index" class="grid-cols-12 grid gap-4"  role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+            
+              <router-link class="font-bold text-xl p-2 m-2 col-span-12"   :to="{name:`${value.name_route}`}">{{value.name}} </router-link>
 
-              <navProfil v-if="value.name=='profil' && this.governor_id>0" :governor_id="this.governor_id"></navProfil>
-              <hr  v-if="value.name=='profil'"  class="bg-gray-900 ">
-              <div v-if="value.name=='profil' && this.governor_id == null " class="p-2 m-2">Select your Profil before access this menu</div>
-            </ul>
-           
+              <navProfil v-if="value.name=='profil' && this.governor_id>0" :governor_id="this.governor_id" class="p-2 m-2 col-span-12"></navProfil>
+
+              <div v-if="value.name=='profil' && this.governor_id == null " class="col-span-12">Select your Profil before access this menu</div>
+          
           </div>
         </div>
       </div>
@@ -54,13 +73,17 @@
     </div>
     <button  class="bg-gradient-to-br from-red-500 to-orange-500 p-2 m-2 rounded-lg text-white " @click="logout">Logout</button>
   </section>
+ 
   <router-link v-else  to="/auth/login" :class="`${className}`">Login</router-link>
-
+  <router-link v-if="!$store.state.isLoggedIn" to="/hall_of_heroes" :class="`${className}`">Hall of fame </router-link> 
+  <router-link  to="/recruitment" :class="`${className}`">Recruitment</router-link>
+</div>
 
     </nav>
 </template>
 
 <script>
+
 
 import VueCookies from 'vue-cookies'
 import navProfil from '@/user/components/navProfil.vue'
@@ -73,17 +96,20 @@ components:{
     return {
     
       className:"p-2 m-2 text-xl font-bold bg-clip-text text-gray-50 ",
-     
+      btn:false,
+      count:1,
       isDropdownOpen: false,
       currentDropdownIndex: null,
       openExtNav:false,
       governor_id:'',
+      token:null,
       nav:[
         {
             title:'Space KvK',
             content:[
                 {name_route:"objective",name:"Objective"},
                 {name_route:"calendar",name:"Calendar Kvk"},
+                
                 {name_route:"hall of heroes",name:"Hall of heroes"}
             ]
 
@@ -100,21 +126,22 @@ components:{
       {
           title:"Dashboard Access",
           content:[
-            {link:`${process.env.VUE_APP_URL_API}dashboard/kingdom/`,name:"Dashboard Kingdom"},
-              {link:`${process.env.VUE_APP_URL_API}dashboard/kvk/`,name:"Dashboard KVK"},
-              {link:`${process.env.VUE_APP_URL_API}dashboard/mge/`,name:"Dashboard MGE"},
-              {link:`${process.env.VUE_APP_URL_API}dashboard/war/`,name:"Dashboard Civil War"}
+            {link:`${process.env.VUE_APP_URL_API_DASHBAORD}dashboard/kingdom/`,name:"Dashboard Kingdom"},
+              {link:`${process.env.VUE_APP_URL_API_DASHBAORD}dashboard/kvk/`,name:"Dashboard KVK"},
+              // {link:`${process.env.VUE_APP_URL_API_DASHBAORD}dashboard/mge/`,name:"Dashboard MGE"},
+              // {link:`${process.env.VUE_APP_URL_API_DASHBAORD}dashboard/war/`,name:"Dashboard Civil War"}
           ]
         },
       ]
     }
   
   },
-  mounted() {
-    this.governor_id = VueCookies.get("governor_id")
-    console.log(this.governor_id)
-},
+ 
+  beforeUpdate() {
+    this.governor_id = VueCookies.get("governor_id");
 
+
+},
   methods:{
     logout() {
       
@@ -139,7 +166,26 @@ components:{
       this.isDropdownOpen = false;
       this.currentDropdownIndex = null;
     },
+    openav() {
+        this.count+=1
+        if (this.count %2 == 0) {
+            return this.btn =true; 
+        }
+         
+        else{
+            return this.btn=false
+        }
+            // Changer la valeur de 1280 selon votre point de rupture XL
+  }
 
+  },
+  watch:{
+    '$route' () {
+   
+      return this.btn=false
+      
+   
+    }
   },
   computed:{
   
@@ -149,6 +195,5 @@ components:{
 
 }</script>
 
-<style scoped>
-
+<style scoped >
 </style>

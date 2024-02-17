@@ -34,10 +34,7 @@
                     bg-gradient-to-br from-yellow-500 via-amber-500 to-orange-500 
                     hover:bg-gradient-to-bl from-amber-500 to-amber-900 
                     px-5 py-3  m-2 w-full rounded-lg text-gray-100  font-semibold text-center" @click="showRegister" >Register</button>
-                    <!-- <router-link class="col-span-11 xl:col-span-4 btn w-98
-                    bg-gradient-to-br from-yellow-500 via-amber-500 to-orange-500 
-                    hover:bg-gradient-to-bl from-amber-500 to-amber-900 
-                    px-5 py-3  m-2 w-full rounded-lg text-gray-100  font-semibold text-center" :to="{name:'regsiter'}" >Register</router-link> -->
+        
 
         </div>
       </div>
@@ -60,31 +57,37 @@ export default {
       open:false,
       count:0,
       resetOpen:false,
+   
     };
   },
   methods: {
     async login() {
       try {
-            const response = await axios.post('http://127.0.0.1:8000/authentification/api/token/', {
+            const response = await axios.post(`${process.env.VUE_APP_URL_API}authentification/api/token/`, {
           username: this.username,
           password: this.password,
         });
         
-
         if (response.status == 200){
           const token = response.data.access;
           const userId = response.data.user_id
- 
-          VueCookies.set('jwt_token',token,'2h');
+
+          // VueCookies.set('jwt_token', token, '2h', { secure: true, domain: 'riseofstat.com' });
+          VueCookies.set('jwt_token', token, '2h');
+          axios.defaults.headers.common['Authorization'] = `Bearer ${this.$cookies.get('jwt_token')}`;
+
           VueCookies.set('user_id',userId,'2h');
+         
           this.$store.commit('setLoggedIn',true);
           
+         
+           window.location.reload();
            this.$router.push("/")
+          
         }
 
     
       } catch (error) {
-       
         return this.message = "Username or Password is false";
       }
     },
