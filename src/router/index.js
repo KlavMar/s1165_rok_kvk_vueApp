@@ -4,12 +4,15 @@ import ObjectiveAPP from '@/kvk/components/objective'
 import CalendarApp from '@/views/Calendar.vue'
 import hallOfFame from '@/kvk/views/hallOfFame.vue'
 import recruitment from '@/recruitment/views/recruitment.vue'
-
+import Service from "@/services/views/ServiceView.vue"
+import axios from 'axios';
+//import store from '@/store/index.js'
 const routes = [
   {
     path:'/',
     name:'home',
-    component:home
+    component:home,
+
   },
   {
     path: '/objective',
@@ -23,7 +26,8 @@ const routes = [
   },
   {
     path:'/hall_of_heroes',
-    name:'hall of heroes',
+    name:'hall_of_heroes',
+    
     component:hallOfFame
 
   },
@@ -31,6 +35,12 @@ const routes = [
     path:'/recruitment',
     name:'recruitment',
     component:recruitment
+
+  },
+  {
+    path:'/services',
+    name:'service',
+    component:Service
 
   },
 
@@ -41,6 +51,7 @@ const routes = [
       {
         path:'login',
         name:"login",
+        
         component:()=>import('@/auth/views/login.vue')
       },
       {
@@ -57,6 +68,7 @@ const routes = [
   },
   {
     path:'/user',
+
     name:"user",
     children:[
       {
@@ -106,5 +118,19 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
-
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401 || error.response.status==404) {
+      // Redirigez vers la route "home" en cas d'erreur 401
+      router.push({ name: 'home' });
+    }
+    return Promise.reject(error);
+  }
+);
+//router.beforeEach((to, from) => {
+//  console.log("route", to, from);
+//  const isLoggedIn = store.state.isLoggedIn;
+//  const hasCookies = (document.cookie.includes('jwt_token') && document.cookie.includes('user_id')) || document.cookie.includes("governor_id");
+//});
 export default router

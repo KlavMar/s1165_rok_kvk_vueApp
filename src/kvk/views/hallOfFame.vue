@@ -1,5 +1,5 @@
 <template>
-    <div class="relative flex flex-col items-center min-h-screen ">
+    <div class="relative flex flex-col items-center xl:min-h-screen ">
       <div v-if="loading" class="flex justify-center items-center absolute inset-0 bg-white z-40 h-screen w-screen">
         <div class="loader"></div>
       </div>
@@ -8,7 +8,7 @@
         <section v-if="time_left<=0"> -->
         <section class="flex flex-col p-2 m-2 justify-center items-center w-full xl:max-w-3xl">
           <div class="grid grid-cols-12 gap-4 w-full">
-    <div class="p-2 col-span-4 flex flex-col justify-center items-center text-lg xl:text-2xl font-semibold
+    <div class="p-2 col-span-6 flex flex-col justify-center items-center text-lg xl:text-2xl font-semibold
     bg-gradient-to-br from-blue-500 to-cyan-500 text-gray-50"
       v-for="(tab, index) in tabs"
       :key="index"
@@ -25,34 +25,33 @@
     </div>
   </div>      
   
-  <button class="bg-gradient-to-br from-rose-500 via-purple-500 to-indigo-500 font-bold text-gray-50 py-2 px-5 m-2 rounded-lg" @mouseover="isactivescreen=true" @mouseleave="isactivescreen=false"> 
-    Your image must be => <small> Hover me </small></button>
+  <button class="bg-gray-950 font-bold text-gray-50 py-2 px-5 m-2 text-2xl w-full rounded-lg"> 
+    Your image must be</button>
   
-    <img v-show="isactivescreen" src="@/assets/hall_of_fame.jpeg" class="w-full rounded-xl">
+    <img  src="@/assets/hall_of_fame.jpeg" class="w-full rounded-xl">
 
-        <form enctype="multipart/form-data" id="image_" >
-        <div class="custom-file-upload relative  z-1" >
-            <button  class=" button p-2 m-2 rounded-lg text-white z-2" type="button" @click="openFilePicker">File</button>
-          <input type="file" ref="imageInput" accept=".jpg, .jpeg, .png" @change="loadImage" class="custom-file-input absolute inset-0 ">
-          </div>
-      
-        </form>
+        <form enctype="multipart/form-data" id="image_" ></form>
             <img   src="#" alt="" id="image" class="m-2 p-2" style="box-sizing: content-box; border-radius: 2em;">
-        <div id="message" class="bg-white p-2 m-2 text-3xl font-bold text-gray-700 absolute inset-0 text-center" v-if="message">Data are send, redirect after 5sec </div>
+        <div id="message" class="bg-white text-3xl font-bold text-gray-700 fixed inset-0  w-full min-h-screen flex justify-center items-center z-20 text-center" v-if="message">Data are send, redirect after 5sec </div>
         <div class="m-2 p-2 w-full"  v-if="!message ">
 
           <form  v-on:submit.prevent="FormSend" id="form_ocr" class="grid grid-cols-12 gap-6">
             <label for="id_account" class="col-span-12 xl:col-span-6 text-xl font-semibold p-2 m-2">Governor Id </label>
-            <input type="number" name="id_account" v-model="governor_id" class="col-span-6 px-5 py-2 text-xl font-semibold m-2 bg-blue-900 text-white rounded-lg">
+            <input type="number" name="id_account" v-model="governor_id" class="col-span-12 xl:col-span-6 px-5 py-2 text-xl font-semibold m-2 bg-blue-900 text-white rounded-lg">
             <select id="id_kvk" name="id_kvk" class="col-span-12 p-2 m-2 hidden">
 
               <option  v-for="(value,index) in kvk" :key="index" :name="value.id" :value="value.id" >{{ value.name_kvk }}</option>
             </select>
+
+            <div class="custom-file-upload relative  z-1 col-span-12" >
+            <button  class=" button px-5 py-2 m-2 w-full rounded-lg text-white text-xl font-bold" type="button" @click="openFilePicker">select your file</button>
+            <input type="file" ref="imageInput" accept=".jpg, .jpeg, .png" @change="loadImage" class="custom-file-input absolute inset-0 ">
+            </div>
         
 
             <button type="submit"  data-action="confirm" :disabled="isSubmitDisabled" 
             :class="[
-            'col-span-12 xl:col-span-6 btn text-gray-50 px-5 py-2 font-bold',
+            'col-span-12 xl:col-span-6 btn text-gray-50 px-5 py-2 font-bold rounded-lg text-xl',
             isSubmitDisabled ? 'bg-gradient-to-br from-orange-500 to-red-500' : 'bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500'
         ]"
             >confirm</button>
@@ -64,9 +63,10 @@
   </template>
   
   <script>
-  // import VueCookies from 'vue-cookies'
+  
   import axios from 'axios';
-  // import VueCookies from 'vue-cookies'
+import VueCookies from 'vue-cookies';
+
 
   export default {
     name: "HallOfFame",
@@ -79,7 +79,7 @@
         imageLoaded: false,
         loadedImage: null,
         loading: false,
-        governor_id:"",
+        governor_id:VueCookies.get("governor_id"),
         file:'',
         user:'',
         data:[],
@@ -192,7 +192,7 @@ async created(){
     computed: {
                 // Utilisez une propriété calculée pour déterminer si le bouton doit être désactivé
                 isSubmitDisabled() {
-                  console.log("Image load =>" +this.imageLoaded)
+                 
                   if (this.imageLoaded === false){
                     return true
                   }
@@ -237,8 +237,7 @@ async created(){
 
 .button {
   position: relative;
-  width: 120px;
-  height: 40px;
+
   background-color: #000;
   display: flex;
   align-items: center;
@@ -262,7 +261,6 @@ async created(){
   width: 128px;
   height: 48px;
   border-radius: 10px;
-  background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100% );
   z-index: -10;
   pointer-events: none;
   transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -273,8 +271,6 @@ async created(){
   z-index: -1;
   position: absolute;
   inset: 0;
-  background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100% );
-  filter: blur(15px);
 }
 
 .input-gov{

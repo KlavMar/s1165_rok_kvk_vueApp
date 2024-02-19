@@ -46,22 +46,24 @@
     </article>
 
     <article id="recruitment" class="col-span-12  flex justify-center items-center ">
-      <img src="@/assets/recruitment_close.png" class="rounded-xl">
+      <img src="@/assets/recruitment_open.png" class="rounded-xl">
      
     </article>
    
 
 
     <article id="staff" class=" col-span-12  min-h-screen flex flex-col  justify-center items-center">
-      <div class="flex flex-col xl:grid-cols-12 gap-12 xl:grid  w-full xl:w-10/12 2xl:w-8/12 mx-auto p-2 m-2" >
+      <div class="flex flex-col xl:grid-cols-12 gap-12 xl:grid  mx-auto p52 m-2" >
 
  
-      <div class="col-span-12  xl:col-span-3 p-4 m-4 rounded-xl flex flex-col justify-start items-center  rounded-lg  p-4 bg-white border-t-8 border-red-500 "   v-for="(value,index) in orga" :key="index">
-        <h3 class="text-2xl lg:text-3xl 2xl:text-6xl p-2 m-2 col-span-12 xl:col-span-6 items-center  flex
-        bg-clip-text text-transparent bg-gray-700 font-bold "
+      <div class="col-span-12 flex flex-col  xl:col-span-12 p-4 m-4 rounded-xl justify-start items-center  rounded-lg  p-4  min-h-96 "   v-for="(value,index) in orga" :key="index">
+        <div class="grid grid-cols-12 gap-4">
+          
+        </div>
+        <h3 class="text-2xl lg:text-3xl 2xl:text-8xl p-2 m-2 col-span-12 xl:col-span-12 items-center text-gray-50 font-bold "
       >{{ value.title }}</h3>
-      <div class="col-span-12 xl:col-span-6  flex flex-col items-start xl:justify-center font-bold  text-xl xl:text-2xl  leading-loose font-semibold  " >
-        <p v-for="(value,index) in value.content" :key="index" class="p-2 m-2">{{ value }}</p>
+      <div class="col-span-12   flex flex-col items-start xl:justify-center font-bold  text-xl xl:text-3xl  text-gray-100 leading-loose font-semibold  " >
+        <p v-for="(value,index) in value.members" :key="index" class="p-2 m-2">{{ value }}</p>
         </div>
 
       </div>
@@ -87,25 +89,27 @@ export default{
         orga:[
           {
             title:"Leader",
-            content:[
+            members:[
               "FFigueras","LéoDynamo","Jmez","Arzival"
             ]
           },
             {
-            title:"Migration",
-            content:[
+            title:"Migrate",
+            members:[
               "Arzival","CoCo"
             ]
           },
           {
             "title":"Analyst ",
-            "content":[
+     
+
+            "members":[
               "Arzival"
             ]
           },
           {
             "title":"Events",
-            "content":[
+            "members":[
               "LéoDynamo","Babass","NeoPunch"
             ]
           },

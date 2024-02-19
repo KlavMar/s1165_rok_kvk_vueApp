@@ -1,6 +1,6 @@
 <template>
 
-    <section class="flex flex-col w-max-full  xl:w-10/12 2xl:w-8/12 mx-auto min-h-screen">
+    <section class="flex flex-col w-max-full  xl:w-10/12 2xl:w-8/12 mx-auto min-h-screen" v-if="this.access">
     <div id ="data_user" class=" relative p-2 m-2" >
         <div class="flex grid grid-cols-12 gap-4 py-2 my-2 ">
             <p class="col-span-12 text-xl font-bold p-2 m-2" v-if="data.length==0">You have no Profil please Add</p>
@@ -106,6 +106,13 @@
             
         </div>
     </section>
+    <div v-else>
+      <div class="  xl:h-screen flex justify-center items-center">
+        <h3 class="text-xl bg-red-500 xl-h-64 rounded-lg p-10 m-2  text-gray-50 font-bold" >
+            You haven't access this page - You need create account - Token Connection not permise this access
+
+        </h3> </div>
+    </div>
     </template>
         <script>
     import axios from 'axios';
@@ -128,7 +135,9 @@
                         data_account:false,
                         id_data_account:false,
                         id_account:'',
-                        user_id:''
+                        access:'',
+                        user_id:'',
+              
       
                       
                     }
@@ -137,6 +146,7 @@
            
 
                         this.user_id = this.$cookies.get('user_id')
+                        this.access=this.$cookies.get("jwt_token");
 
                         this.kingdom=await this.getKingdom();
                         this.data= await this.getData();

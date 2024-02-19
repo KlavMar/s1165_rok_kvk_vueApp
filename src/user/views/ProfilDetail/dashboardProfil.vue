@@ -1,6 +1,6 @@
 <template>
   <section class="bg-gray-900">
-    <div class="grid grid-cols-12 gap-6 w-full xl:w-10/12 2xl:w-8/12 mx-auto bg-white p-4 rounded-md">
+    <div class="grid grid-cols-12 gap-6 w-full  mx-auto bg-white p-4 rounded-md">
       <div class="key_container col-span-12 xl:col-span-2 ">
         <div v-if="last_data.length>0">
             <section class="grid grid-cols-12 gap-4 my-2 p-2" v-for="(value,index) in last_data" :key="index">
@@ -178,7 +178,7 @@
             return this.infantry
         }
         catch(error){
-           this.$router.push({name:"profil"})
+            console.log(error)
         }
       },
       async getCavalry(){
@@ -189,7 +189,7 @@
             return this.cavalry
         }
         catch(error){
-          this.$router.push({name:"profil"})
+           console.log(error)
         }
       },
       async getArchers(){
@@ -200,7 +200,7 @@
             return this.archers
         }
         catch(error){
-          this.$router.push({name:"profil"})
+           console.log(error)
         }
       },
       async getTreb(){
@@ -211,7 +211,7 @@
             return this.treb
         }
         catch(error){
-          this.$router.push({name:"profil"})
+           console.log(error)
         }
       },
       async getRss(){
@@ -224,7 +224,7 @@
         }
         catch(error){
           
-            this.$router.push({name:"login"})
+          console.log(error)
         }
       },
       async getAccel(){

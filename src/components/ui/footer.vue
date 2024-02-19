@@ -1,6 +1,6 @@
 <template>
-<footer class="footer p-10 grid-cols-12 h-98 grid grid-cols-12 gap-4  bg-black ">
-    <img class="col-span-12 xl:col-span-3 " src="@/assets/new_logo.png" >
+<footer class="footer p-10 grid-cols-12 h-98 grid grid-cols-12 gap-4  bg-gradient-to-b from-gray-950 to-black xl:h-3/5">
+    <img class="col-span-12 xl:col-span-3  " src="@/assets/logo.png" >
    
     <div class="img_media_sociaux flex justify-center items-center col-span-12 xl:col-span-6">
 

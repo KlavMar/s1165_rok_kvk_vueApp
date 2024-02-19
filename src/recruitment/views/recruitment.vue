@@ -28,6 +28,6 @@
     }
   }
 </script>
-<style>
+<style scoped>
 #block-nav{display:none}
 </style>

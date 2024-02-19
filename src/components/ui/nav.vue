@@ -18,14 +18,15 @@ nav-color-play bg-gray-900"
           <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </button>
-
-          <section class="container_nav_offline flex flex-col xl:flex-row xl:items-center xl:justify-center"  v-if="$store.state.isLoggedIn">
-    
-            <router-link class=" text-white font-semibold p-2 m-2" :to="{name:'home'}">
+      <router-link class=" text-white font-semibold p-2 m-2" :to="{name:'home'}">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
           <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
           </svg>
             </router-link>
+
+
+          <section class="container_nav_offline flex flex-col xl:flex-row xl:items-center xl:justify-center"  v-if="$store.state.isLoggedIn">
+    
 
           
 
@@ -62,21 +63,22 @@ nav-color-play bg-gray-900"
             
               <router-link class="font-bold text-xl p-2 m-2 col-span-12"   :to="{name:`${value.name_route}`}">{{value.name}} </router-link>
 
-              <navProfil v-if="value.name=='profil' && this.governor_id>0" :governor_id="this.governor_id" class="p-2 m-2 col-span-12"></navProfil>
+              <navProfil v-if="value.name=='profil' && this.access  && this.governor_id>0" :governor_id="this.governor_id" class="p-2 m-2 col-span-12"></navProfil>
 
-              <div v-if="value.name=='profil' && this.governor_id == null " class="col-span-12">Select your Profil before access this menu</div>
+              <div v-if="value.name=='profil' && this.governor_id == null  && this.token " class="col-span-12">Select your Profil before access this menu</div>
           
           </div>
         </div>
       </div>
      
     </div>
+   <!-- <router-link  to="/recruitment" :class="`${className}`">Recruitment</router-link>-->
     <button  class="bg-gradient-to-br from-red-500 to-orange-500 p-2 m-2 rounded-lg text-white " @click="logout">Logout</button>
   </section>
  
-  <router-link v-else  to="/auth/login" :class="`${className}`">Login</router-link>
-  <router-link v-if="!$store.state.isLoggedIn" to="/hall_of_heroes" :class="`${className}`">Hall of fame </router-link> 
-  <router-link  to="/recruitment" :class="`${className}`">Recruitment</router-link>
+  
+
+
 </div>
 
     </nav>
@@ -98,19 +100,19 @@ components:{
       className:"p-2 m-2 text-xl font-bold bg-clip-text text-gray-50 ",
       btn:false,
       count:1,
+      access:'',
       isDropdownOpen: false,
       currentDropdownIndex: null,
       openExtNav:false,
       governor_id:'',
-      token:null,
+      token:'',
       nav:[
         {
             title:'Space KvK',
             content:[
                 {name_route:"objective",name:"Objective"},
                 {name_route:"calendar",name:"Calendar Kvk"},
-                
-                {name_route:"hall of heroes",name:"Hall of heroes"}
+                {name_route:"hall_of_heroes",name:"Hall of heroes"}
             ]
 
         },
@@ -138,8 +140,14 @@ components:{
   },
  
   beforeUpdate() {
+    this.access=VueCookies.get('jwt_token');
+    this.token=VueCookies.get("ConnectionToken");
     this.governor_id = VueCookies.get("governor_id");
-
+    console.log("governor_id cookies" ,this.governor_id)
+    console.log("token",VueCookies.get("jwt_token"))
+    console.log("Access token auth =>"+this.access)
+    console.log("Access token by discord =>"+this.token)
+    
 
 },
   methods:{

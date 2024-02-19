@@ -19,8 +19,11 @@ export default createStore({
     showRegister(state){
       state.showRegister= !state.showRegister;
     },
+    showTokenPage(state){
+      state.showTokenPage = !state.showTokenPage;
+    },
     setLoggedIn(state,value) {
-      console.log(state.isLoggedIn)
+      console.log("state login=>"+state.isLoggedIn)
       state.isLoggedIn = value;
       
     },
